@@ -27,17 +27,16 @@ def decrypt(ciphertext, priv_key):
     return cipher.decrypt(ciphertext)
 
 
-def sign(message, priv_key):
-    signer = PKCS1_v1_5.new(priv_key)
+def sign(message, privateKey):
+    signer = PKCS1_v1_5.new(privateKey)
     digest = SHA.new()
     digest.update(message)
     return signer.sign(digest)
 
 
-def verify(message, signature, pub_key):
-    signer = PKCS1_v1_5.new(pub_key)
-    if (hash == "SHA-1"):
-        digest = SHA.new()
+def verify(message, signature, publicKey):
+    signer = PKCS1_v1_5.new(publicKey)
+    digest = SHA.new()
     digest.update(message)
     return signer.verify(digest, signature)
 
