@@ -46,12 +46,9 @@ def keyToPem(key):
     return key.save_pkcs1().decode('utf8')
 
 
-def pemToPUKey(pem):
-    return rsa.PublicKey.load_pkcs1(pem.encode('utf8'))
-
-
-def pemToPRKey(pem):
-    return rsa.PrivateKey.load_pkcs1(pem.encode('utf8'))
+def printToFile(fileName, data):
+    with open("./" + fileName, 'w') as the_file:
+        print(data, file=the_file)
 
 
 keySize = 512
@@ -59,9 +56,9 @@ publicKey, privateKey = rsa.newkeys(keySize)
 
 # stari kod
 plaintext = b"Hello Tony, I am Jarvis!"
-msg2 = b"Hello Toni, I am Jarvis!"
-cyphertext = b64encode(rsa.encrypt(plaintext, publicKey))
-originalMessage = rsa.decrypt(b64decode(cyphertext), privateKey)
+msg2 = b"Hello Toni, I am Jarvis!"  # try to verify
+ciphertext = b64encode(rsa.encrypt(plaintext, publicKey))
+originalMessage = rsa.decrypt(b64decode(ciphertext), privateKey)
 signature = b64encode(rsa.sign(plaintext, privateKey, "SHA-1"))
 verify = rsa.verify(plaintext, b64decode(signature), publicKey)
 
@@ -74,11 +71,12 @@ if PUPem == PUReloaded:
 
 PRPem = privateKey.save_pkcs1().decode()
 
-with open("./privateKey.pem", 'a') as the_file:
-    print(PRPem, file=the_file)
-
-print("Encrypted: " + cyphertext.decode())
+printToFile("privateKey.pem", PRPem)
+print("Encrypted: " + ciphertext.decode())
 print("Decrypted: '%s'" % originalMessage)
-print("Signature: " + signature)
+printToFile("signature.txt", signature)
 print("Verify: %s" % verify)
-rsa.verify(msg2, b64decode(signature), publicKey)
+try:
+    test = rsa.verify(msg2, b64decode(signature), publicKey)
+except Exception:
+    print("Can not verify !")
