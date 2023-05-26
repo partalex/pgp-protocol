@@ -5,11 +5,11 @@ public_key = private_key.publickey()
 print(private_key.exportKey(format='PEM'))
 print(public_key.exportKey(format='PEM'))
 
-with open("./private.pem", "w") as prv_file:
-    print("{}".format(private_key.exportKey()), file=prv_file)
+with open("./private.pem", "w") as file:
+    print("{}".format(private_key.exportKey()), file=file)
 
-with open("./public.pem", "w") as pub_file:
-    print("{}".format(public_key.exportKey()), file=pub_file)
+with open("./public.pem", "w") as file:
+    print("{}".format(public_key.exportKey()), file=file)
 
-with open('./private_key.pem', 'rb') as privatefile:
-    pkeydata = privatefile.read()
+with open('./private_key.pem', 'rb') as file:
+    pkeydata = file.read()

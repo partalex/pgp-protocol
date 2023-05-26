@@ -48,6 +48,8 @@ def keyToPem(key):
 def printToFile(fileName, data):
     with open("./" + fileName, 'w') as the_file:
         print(data, file=the_file)
+        the_file.close()
+
 
 
 keySize = 512
@@ -59,21 +61,19 @@ msg2 = b"Hello Toni, I am Jarvis!"  # try to verify
 ciphertext = b64encode(rsa.encrypt(plaintext, publicKey))
 originalMessage = rsa.decrypt(b64decode(ciphertext), privateKey)
 signature = b64encode(rsa.sign(plaintext, privateKey, "SHA-1"))
-verify = rsa.verify(plaintext, b64decode(signature), publicKey)
 
 PUPem = publicKey.save_pkcs1().decode()
-# print(PUPem)
 PUReloaded = rsa.PublicKey.load_pkcs1(PUPem.encode())
 
-if PUPem == PUReloaded:
-    print("radi")
-
 PRPem = privateKey.save_pkcs1().decode()
+PRReloaded = rsa.PrivateKey.load_pkcs1(PRPem.encode())
 
 printToFile("privateKey.pem", PRPem)
 print("Encrypted: " + ciphertext.decode())
 print("Decrypted: '%s'" % originalMessage)
 printToFile("signature.txt", signature)
+
+verify = rsa.verify(plaintext, b64decode(signature), publicKey)
 print("Verify: %s" % verify)
 try:
     test = rsa.verify(msg2, b64decode(signature), publicKey)
