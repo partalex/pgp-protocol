@@ -1,5 +1,10 @@
 from elgamal.elgamal import Elgamal
 
+t = Elgamal.newkeys(18)
+
+# num = randint(0, 50)
+# pb = ElGamal.generate(2048, randint(0, 50))
+
 m = b'Text'
 
 print(m)
