@@ -1,14 +1,5 @@
 import zlib
 
-data = "Ovaj string je    kompresovan    zlib-om !!!!"
-print(data)
-
-dataCompressed = zlib.compress(data.encode())
-print(dataCompressed)
-
-dataOriginal = zlib.decompress(dataCompressed)
-print(dataOriginal.decode())
-
 
 class Compression:
     @staticmethod
@@ -26,3 +17,14 @@ class Compression:
     @staticmethod
     def decompressToBytes(data):
         return zlib.decompress(data)
+
+
+# Example
+# data = "Ovaj string je    kompresovan    zlib-om !!!!"
+# print(data)
+#
+# dataCompressed = Compression.compressString(data)
+# print(dataCompressed)
+#
+# dataOriginal = Compression.decompressToString(dataCompressed)
+# print(dataOriginal)
