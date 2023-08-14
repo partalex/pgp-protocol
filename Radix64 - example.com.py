@@ -4,9 +4,9 @@ import base64
 class Radix64:
 
     @staticmethod
-    def encodeFromString(palintexString):
-        palintexString = palintexString.encode('ascii')
-        return Radix64.encodeBytes(palintexString)
+    def encodeFromString(plaintexString):
+        plaintexString = plaintexString.encode('ascii')
+        return Radix64.encodeBytes(plaintexString)
 
     @staticmethod
     def encodeBytes(plaintextBytes):
