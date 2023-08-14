@@ -19,12 +19,12 @@ class Compression:
         return zlib.decompress(data)
 
 
-# Example
-# data = "Ovaj string je    kompresovan    zlib-om !!!!"
-# print(data)
-#
-# dataCompressed = Compression.compressString(data)
-# print(dataCompressed)
-#
-# dataOriginal = Compression.decompressToString(dataCompressed)
-# print(dataOriginal)
+if __name__ == '__main__':
+    data = "Ovaj string je    kompresovan    zlib-om !!!!"
+    print(data)
+
+    dataCompressed = Compression.compressString(data)
+    print(dataCompressed)
+
+    dataOriginal = Compression.decompressToString(dataCompressed)
+    print(dataOriginal)
