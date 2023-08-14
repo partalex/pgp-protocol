@@ -1,21 +1,29 @@
-from base64 import b64encode, b64decode
-
-from pyDes import triple_des, CBC, PAD_PKCS5
+from Cryptodome.Random import get_random_bytes
+from pyDes import des, CBC, PAD_PKCS5, triple_des
 
 
 class TripleDES:
     @staticmethod
-    def encrypt24B(message, key24B='1234567_1234567_1234567_', initVectorCBC='12345678'):
-        cipher_encrypt = triple_des(key24B, CBC, initVectorCBC, pad=None, padmode=PAD_PKCS5)
-        ct_bytes = cipher_encrypt.encrypt(message)
-        iv = b64encode(cipher_encrypt.iv).decode('utf-8')
-        ct = b64encode(ct_bytes).decode('utf-8')
-        return iv, ct
+    def encrypt(plaintext, key=get_random_bytes(24), iv='\0\0\0\0\0\0\0\0'):
+        temp = triple_des(key, CBC, iv, pad=None, padmode=PAD_PKCS5)
+        cipher = temp.encrypt(plaintext)
+        return cipher
 
     @staticmethod
-    def decrypt24B(key24B, iv, ct):
-        iv = b64decode(iv)
-        ct = b64decode(ct)
-        cipher_decrypt = triple_des(key24B, CBC, iv, pad=None, padmode=PAD_PKCS5)
-        pt = cipher_decrypt.decrypt(ct)
-        return pt
+    def decrypt(key, iv, cipher):
+        temp = triple_des(key, CBC, iv, pad=None, padmode=PAD_PKCS5)
+        plaintext = temp.decrypt(cipher)
+        return plaintext
+
+
+if __name__ == '__main__':
+    plaintext = b"Please encrypt my data with 24B key. If you want to use 16B key, use 3DES.py."
+    print("Plaintext: %r" % plaintext)
+
+    key = get_random_bytes(24)
+    iv = '\0\0\0\0\0\0\0\0'
+    cipher = TripleDES.encrypt(plaintext, key, iv)
+    print("Encrypted: %r" % cipher)
+
+    originalText = TripleDES.decrypt(key, iv, cipher)
+    print("Decrypted: %r" % originalText)
