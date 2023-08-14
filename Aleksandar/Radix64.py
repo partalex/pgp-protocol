@@ -20,24 +20,24 @@ class Radix64:
     def decodeToBytes(cipher):
         return base64.b64decode(cipher)
 
-
-print("Example with string:")
-message = "Hello Tony, I am Jarvis!"
-print("Message: " + message)
-
-encoded = Radix64.encodeFromString(message)
-print("Encoded: " + encoded.decode('utf-8'))
-
-decoded = Radix64.decodeToString(encoded)
-print("Decoded: " + decoded)
-
-print("\nExample with bytes:")
-
-message = b"Hello Tony, I am Jarvis!"
-print("Message: " + message.decode('utf-8'))
-
-encoded = Radix64.encodeBytes(message)
-print("Encoded: " + encoded.decode('utf-8'))
-
-decoded = Radix64.decodeToBytes(encoded)
-print("Decoded: " + decoded.decode('utf-8'))
+# Example
+# print("Example with string:")
+# message = "Hello Tony, I am Jarvis!"
+# print("Message: " + message)
+#
+# encoded = Radix64.encodeFromString(message)
+# print("Encoded: " + encoded.decode('utf-8'))
+#
+# decoded = Radix64.decodeToString(encoded)
+# print("Decoded: " + decoded)
+#
+# print("\nExample with bytes:")
+#
+# message = b"Hello Tony, I am Jarvis!"
+# print("Message: " + message.decode('utf-8'))
+#
+# encoded = Radix64.encodeBytes(message)
+# print("Encoded: " + encoded.decode('utf-8'))
+#
+# decoded = Radix64.decodeToBytes(encoded)
+# print("Decoded: " + decoded.decode('utf-8'))
