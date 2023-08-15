@@ -21,7 +21,7 @@ if __name__ == '__main__':
     }
 
     filename = 'test'
-    plaintext = b"Da li ovo radi? Ako radi, Marko neka nastavi sa radom."
+    plaintext = "Da li ovo radi? Ako radi, Marko neka nastavi sa radom."
 
     Message.send(plaintext, filename, info)  # cipher text is saved to file
 
