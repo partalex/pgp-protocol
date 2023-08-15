@@ -14,10 +14,10 @@ class AES128:
         # iv = b64encode(cipher_encrypt.iv).decode('utf-8')
         ct = b64encode(ct_bytes)  # radi i bez decode
         # ct = b64encode(ct_bytes).decode('utf-8')
-        return iv, ct
+        return {"iv": iv, "ciphertext": ct}
 
     @staticmethod
-    def decrypt(key, iv, ciphertext):
+    def decrypt(ciphertext, key, iv):
         iv = b64decode(iv)
         ciphertext = b64decode(ciphertext)
         cipher_decrypt = AES.new(key, AES.MODE_CBC, iv)
@@ -32,7 +32,7 @@ if __name__ == "__main__":
 
     data = AES128.encrypt(message, key)
     print("Encryption parameters:")
-    print("\tiv = " + data[0].decode('utf-8'))
-    print("\tct = " + data[1].decode('utf-8'))
+    print("\tiv = " + data['iv'].decode('utf-8'))
+    print("\tct = " + data['ciphertext'].decode('utf-8'))
 
-    print("Original message: \n\t" + AES128.decrypt(key, data[0], data[1]).decode('utf-8'))
+    print("Original message: \n\t" + AES128.decrypt(data['ciphertext'], key, data['iv']).decode('utf-8'))
