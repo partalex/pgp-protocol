@@ -3,8 +3,13 @@ import hashlib
 
 class SHA1:
     @staticmethod
-    def sign(message):
+    def signString(message):
         hash_obj = hashlib.sha1(message.encode('utf-8'))
+        return hash_obj.hexdigest()
+
+    @staticmethod
+    def sign(message):
+        hash_obj = hashlib.sha1(message)
         return hash_obj.hexdigest()
 
     @staticmethod
