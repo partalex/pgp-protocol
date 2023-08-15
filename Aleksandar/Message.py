@@ -12,14 +12,13 @@ class Message:
     def send(plaintext, filename, info):
         ciphertext = plaintext.encode('utf-8')
         encryptionInfo = {}
-        # print text message
         print('0. Message:')
         print('\t' + plaintext)
 
         print('1. Symmetric encryption:')
         match info['symmetric']:
             case '3DES':
-                print('\t1.1 Message is encrypted with 3DES. ')
+                print('\t1.1 Message is encrypted with 3DES.')
                 ciphertext = TripleDES.encrypt(ciphertext, bytes.fromhex(info['3DES']['key']), info['3DES']['ivCBC'])
             case 'AES128':
                 print('\t1.1 Message is encrypted with AES128.')
@@ -60,31 +59,35 @@ class Message:
         print("5. Read from file:")
         info = FileJSON.readFromFile(filename)['info']
         plaintext = info['ciphertext'].encode('utf-8')
+        print('\t5.1 Message is read from file.')
 
         print("4. Convert from radix64:")
         if info['wantRadix64']:
             plaintext = Radix64.decodeToBytes(plaintext)
+            print('\t4.1 Message is converted from radix64.')
 
         print("3. Decompression:")
         if info['wantCompression']:
             plaintext = Compression.decompress(plaintext)
+            print("\t3.1 Message is decompressed.")
 
         print("2. Authentication:")
         if info['wantSHA1']:
             if SHA1.verify(plaintext, info['signatureSHA1']):
-                print('Message is verified with SHA1')
+                print('\t2.1 Message is verified with SHA1.')
             else:
-                print('Message is not verified with SHA1')
+                print('\t2.1 Message is corrupted.')
+                exit(1)
 
         print("1. Security:")
         match info['symmetric']:
             case 'None':
-                print('Message received without encryption')
+                print('\t1.1 Message is not encrypted.')
             case '3DES':
-                print('Message received with 3DES encryption')
+                print('\t1.1 Message is decrypted with 3DES.')
                 plaintext = TripleDES.decrypt(plaintext, bytes.fromhex(info['3DES']['key']), info['3DES']['ivCBC'])
             case 'AES128':
-                print('Message received with AES128 encryption')
+                print('\t1.1 Message is decrypted with AES128.')
                 plaintext = AES128.decrypt(plaintext, bytes.fromhex(info['AES128']['key']),
                                            info['AES128']['iv'].encode('utf-8'))
 
