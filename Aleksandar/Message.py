@@ -46,7 +46,6 @@ class Message:
 
         print('5. Save to file:')
         info['ciphertext'] = ciphertext.decode('utf-8')
-        info['plaintext'] = plaintext
         encryptionInfo['info'] = info
         FileJSON.writeToFile(filename, encryptionInfo)
         print('\t5.1 Message is saved to file.')
