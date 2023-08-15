@@ -3,10 +3,10 @@ from Cryptodome.Random import get_random_bytes
 from Message import Message
 
 if __name__ == '__main__':
-    filename = 'test'
+    filename = 'FromAleksandarToMarko'
     plaintext = "Da li ovo radi? Ako radi, Marko neka nastavi sa radom."
     info = {  # read from file
-        'symmetric': '3DES',  # can be 'None', '3DES', 'AES128'
+        'symmetric': 'AES128',  # can be 'None', '3DES', 'AES128'
         '3DES': {
             'key': get_random_bytes(24).hex(),  # if symmetric is '3DES',
             'ivCBC': '\0\0\0\0\0\0\0\0',  # if symmetric is '3DES
