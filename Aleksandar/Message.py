@@ -1,9 +1,9 @@
-from Aleksandar.AES128 import AES128
-from Aleksandar.Radix64 import Radix64
-from Aleksandar.Compression import Compression
-from Aleksandar.TripleDES import TripleDES
-from Aleksandar.FileJSON import FileJSON
-from Aleksandar.SHA1 import SHA1
+from AES128 import AES128
+from Radix64 import Radix64
+from Compression import Compression
+from TripleDES import TripleDES
+from FileJSON import FileJSON
+from SHA1 import SHA1
 
 
 class Message:
@@ -17,10 +17,10 @@ class Message:
         match info['symmetric']:
             case '3DES':
                 print('Message secured with 3DES encryption')
-                ciphertext = TripleDES.encrypt(ciphertext, info['3DES']['key'], info['3DES']['ivCBC'])
+                ciphertext = TripleDES.encrypt(ciphertext, bytes.fromhex(info['3DES']['key']), info['3DES']['ivCBC'])
             case 'AES128':
                 print('Message secured with AES128 encryption')
-                ciphertext = AES128.encrypt(ciphertext, info['AES128']['key'])
+                ciphertext = AES128.encrypt(ciphertext, bytes.fromhex(info['AES128']['key']))
             case _:
                 print('Message not secured')
 
@@ -32,14 +32,14 @@ class Message:
 
         print('3. Compression:')
         if info['wantCompression']:
-            ciphertext = Compression.compressBytes(ciphertext)
+            ciphertext = Compression.compress(ciphertext)
 
         print('4. Convert to radix64:')
         if info['wantRadix64']:
             ciphertext = Radix64.encodeBytes(ciphertext)
 
         print('5. Save to file:')
-        info['ciphertext'] = ciphertext
+        info['ciphertext'] = ciphertext.decode('utf-8')
         info['plaintext'] = plaintext
         encryptionInfo['info'] = info
         FileJSON.writeToFile(filename, encryptionInfo)
@@ -47,28 +47,23 @@ class Message:
         return ciphertext
 
     @staticmethod
-    def receive(filename, info):
+    def receive(filename):
 
         print("5. Read from file:")
-        data = FileJSON.readFromFile(filename)
-        info = data['info']
-        plaintext = data['ciphertext']
-
-        with open(filename + '.txt', 'r') as file:
-            plainText = file.read()
-        print('Message read from file ' + filename + '.txt')
+        info = FileJSON.readFromFile(filename)['info']
+        plaintext = info['ciphertext'].encode('utf-8')
 
         print("4. Convert from radix64:")
         if info['wantRadix64']:
-            plainText = Radix64.decodeToBytes(plainText)
+            plaintext = Radix64.decodeToBytes(plaintext)
 
         print("3. Decompression:")
         if info['wantCompression']:
-            plainText = Compression.decompressToBytes(plainText)
+            plaintext = Compression.decompress(plaintext)
 
         print("2. Authentication:")
         if info['wantSHA1']:
-            if SHA1.verify(plainText, info['signatureSHA1']):
+            if SHA1.verify(plaintext, info['signatureSHA1']):
                 print('Message is verified with SHA1')
             else:
                 print('Message is not verified with SHA1')
@@ -79,9 +74,8 @@ class Message:
                 print('Message received without encryption')
             case '3DES':
                 print('Message received with 3DES encryption')
-                plainText = AES128.decrypt(plainText, info['3DES']['key'])
+                plaintext = TripleDES.decrypt(plaintext, bytes.fromhex(info['3DES']['key']), info['3DES']['ivCBC'])
             case 'AES128':
                 print('Message received with AES128 encryption')
-                plainText = TripleDES.decrypt(plainText, info['AES128']['key'])
-
-        print('Message: ' + plainText)
+                plaintext = AES128.decrypt(plaintext, bytes.fromhex(info['AES128']['key']))
+        return plaintext.decode('utf-8')
