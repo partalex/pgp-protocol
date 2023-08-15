@@ -1,7 +1,7 @@
 import hashlib
 
 
-class SH1:
+class SHA1:
     @staticmethod
     def sign(message):
         hash_obj = hashlib.sha1(message.encode('utf-8'))
@@ -17,7 +17,7 @@ if __name__ == '__main__':
     message = "Hello Tony, I am Jarvis!"
     print("Message: " + message)
 
-    signature = SH1.sign(message)
+    signature = SHA1.sign(message)
     print("Signature: " + signature)
 
-    print("Verify: " + str(SH1.verify(message, signature)))
+    print("Verify: " + str(SHA1.verify(message, signature)))
