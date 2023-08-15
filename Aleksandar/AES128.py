@@ -7,9 +7,9 @@ from Cryptodome.Util.Padding import pad, unpad
 
 class AES128:
     @staticmethod
-    def encrypt(message, key):
+    def encrypt(plaintext, key):
         cipher_encrypt = AES.new(key, AES.MODE_CBC)
-        ct_bytes = cipher_encrypt.encrypt(pad(message, AES.block_size))
+        ct_bytes = cipher_encrypt.encrypt(pad(plaintext, AES.block_size))
         iv = b64encode(cipher_encrypt.iv)  # radi i bez decode
         # iv = b64encode(cipher_encrypt.iv).decode('utf-8')
         ct = b64encode(ct_bytes)  # radi i bez decode
@@ -17,22 +17,22 @@ class AES128:
         return iv, ct
 
     @staticmethod
-    def decrypt(key, iv, ct):
+    def decrypt(key, iv, ciphertext):
         iv = b64decode(iv)
-        ct = b64decode(ct)
+        ciphertext = b64decode(ciphertext)
         cipher_decrypt = AES.new(key, AES.MODE_CBC, iv)
-        plaintext = unpad(cipher_decrypt.decrypt(ct), AES.block_size)
+        plaintext = unpad(cipher_decrypt.decrypt(ciphertext), AES.block_size)
         return plaintext
 
 
 if __name__ == "__main__":
     key = get_random_bytes(16)
     message = b'Hello World'
-    print("Plaintext: " + message.decode())
+    print("Plaintext: \n\t" + message.decode())
 
     data = AES128.encrypt(message, key)
-    print("\nEncryption parameters:")
-    print("iv = " + data[0].decode('utf-8'))
-    print("ct = " + data[1].decode('utf-8'))
+    print("Encryption parameters:")
+    print("\tiv = " + data[0].decode('utf-8'))
+    print("\tct = " + data[1].decode('utf-8'))
 
-    print("\nOriginal message: " + AES128.decrypt(key, data[0], data[1]).decode('utf-8'))
+    print("Original message: \n\t" + AES128.decrypt(key, data[0], data[1]).decode('utf-8'))
