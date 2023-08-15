@@ -10,9 +10,9 @@ class TripleDES:
         return cipher
 
     @staticmethod
-    def decrypt(key, cipher, iv='\0\0\0\0\0\0\0\0'):
+    def decrypt(ciphertext, key, iv='\0\0\0\0\0\0\0\0'):
         temp = triple_des(key, CBC, iv, pad=None, padmode=PAD_PKCS5)
-        plaintext = temp.decrypt(cipher)
+        plaintext = temp.decrypt(ciphertext)
         return plaintext
 
 
@@ -25,5 +25,5 @@ if __name__ == '__main__':
     cipher = TripleDES.encrypt(plaintext, key, iv)
     print("Encrypted: %r" % cipher)
 
-    originalText = TripleDES.decrypt(key, cipher, iv)
+    originalText = TripleDES.decrypt(cipher, key, iv)
     print("Decrypted: %r" % originalText)
