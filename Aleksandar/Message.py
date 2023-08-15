@@ -35,22 +35,22 @@ class Message:
             info['signatureSHA1'] = signatureSHA1
             print('\t2.1 Message is signed with SHA1.')
 
-            print('3. Compression:')
-            if info['wantCompression']:
-                ciphertext = Compression.compress(ciphertext)
-                print('\t3.1 Message is compressed.')
+        print('3. Compression:')
+        if info['wantCompression']:
+            ciphertext = Compression.compress(ciphertext)
+            print('\t3.1 Message is compressed.')
 
-            print('4. Convert to radix64:')
-            if info['wantRadix64']:
-                ciphertext = Radix64.encodeBytes(ciphertext)
-                print('\t4.1 Message is converted to radix64.')
+        print('4. Convert to radix64:')
+        if info['wantRadix64']:
+            ciphertext = Radix64.encodeBytes(ciphertext)
+            print('\t4.1 Message is converted to radix64.')
 
-            print('5. Save to file:')
-            info['ciphertext'] = ciphertext.decode('utf-8')
-            info['plaintext'] = plaintext
-            encryptionInfo['info'] = info
-            FileJSON.writeToFile(filename, encryptionInfo)
-            print('\t5.1 Message is saved to file.')
+        print('5. Save to file:')
+        info['ciphertext'] = ciphertext.decode('utf-8')
+        info['plaintext'] = plaintext
+        encryptionInfo['info'] = info
+        FileJSON.writeToFile(filename, encryptionInfo)
+        print('\t5.1 Message is saved to file.')
 
         return ciphertext
 
