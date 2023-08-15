@@ -1,9 +1,11 @@
 import json
 
+from Cryptodome.Random import get_random_bytes
+
 
 class FileJSON:
     @staticmethod
-    def writeToFile(data, filename):
+    def writeToFile(filename, data):
         json_object = json.dumps(data, indent=4)
 
         with open(filename + ".JSON", "w") as outfile:
@@ -17,13 +19,23 @@ class FileJSON:
 
 
 if __name__ == '__main__':
-    data = {
-        "name": "sathiyajith",
-        "rollno": 56,
-        "cgpa": 8.6,
-        "phonenumber": "9976770500"
+    test = {  # read from file
+        'symmetric': '3DES',  # can be 'None', '3DES', 'AES128'
+        '3DES': {
+            'key': get_random_bytes(24).hex(),  # if symmetric is '3DES',
+            'ivCBC': '\0\0\0\0\0\0\0\0',  # if symmetric is '3DES
+        },
+        'AES128': {
+            'key': get_random_bytes(16).hex(),  # if symmetric is 'AES128'
+        },
+        'wantSHA1': True,  # or False
+        # 'SHA1': {
+        #     'signature': 'Aleksandar Vasilic'  # if wantSHA1 is True
+        # },
+        'wantCompression': True,  # or False
+        'wantRadix64': True  # or False
     }
-    filename = "data"
+    filename = "TestJSON"
 
-    FileJSON.writeToFile(data, filename)
+    FileJSON.writeToFile(filename, test)
     print(FileJSON.readFromFile(filename))
