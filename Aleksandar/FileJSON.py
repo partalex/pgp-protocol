@@ -1,7 +1,7 @@
 import json
 
 
-class FileExport:
+class FileJSON:
     @staticmethod
     def writeToFile(data, filename):
         json_object = json.dumps(data, indent=4)
@@ -25,5 +25,5 @@ if __name__ == '__main__':
     }
     filename = "data"
 
-    FileExport.writeToFile(data, filename)
-    print(FileExport.readFromFile(filename))
+    FileJSON.writeToFile(data, filename)
+    print(FileJSON.readFromFile(filename))
