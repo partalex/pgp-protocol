@@ -28,7 +28,7 @@ class Message:
         if info['wantSHA1']:
             signatureSHA1 = SHA1.sign(ciphertext)
             encryptionInfo['signatureSHA1'] = signatureSHA1
-            print('Message is signed with SHA1')
+            print('Message is signed with SHA1. Signature: ' + signatureSHA1)
 
         print('3. Compression:')
         if info['wantCompression']:
