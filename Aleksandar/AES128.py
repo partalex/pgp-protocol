@@ -28,5 +28,11 @@ class AES128:
 if __name__ == "__main__":
     key = get_random_bytes(16)
     message = b'Hello World'
+    print("Plaintext: " + message.decode())
+
     data = AES128.encrypt(message, key)
-    print(AES128.decrypt(key, data[0], data[1]))
+    print("\nEncryption parameters:")
+    print("iv = " + data[0].decode('utf-8'))
+    print("ct = " + data[1].decode('utf-8'))
+
+    print("\nOriginal message: " + AES128.decrypt(key, data[0], data[1]).decode('utf-8'))
