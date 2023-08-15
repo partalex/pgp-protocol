@@ -7,7 +7,7 @@ class Compression:
         return zlib.compress(data.encode('utf-8'))
 
     @staticmethod
-    def compressBytes(data):
+    def compress(data):
         return zlib.compress(data)
 
     @staticmethod
@@ -15,16 +15,27 @@ class Compression:
         return zlib.decompress(data).decode('utf-8')
 
     @staticmethod
-    def decompressToBytes(data):
+    def decompress(data):
         return zlib.decompress(data)
 
 
 if __name__ == '__main__':
-    data = "Ovaj string je    kompresovan    zlib-om !!!!"
-    print(data)
+    dataString = "Ovaj string je    kompresovan    zlib-om !!!!"
+    print(dataString)
 
-    dataCompressed = Compression.compressString(data)
+    dataCompressed = Compression.compressString(dataString)
     print(dataCompressed)
 
     dataOriginal = Compression.decompressToString(dataCompressed)
+    print(dataOriginal)
+
+    print("--------------------------------------------------")
+
+    dataBytes = b"Ovaj string je    kompresovan    zlib-om !!!!"
+    print(dataBytes)
+
+    dataCompressed = Compression.compress(dataBytes)
+    print(dataBytes)
+
+    dataOriginal = Compression.decompress(dataCompressed)
     print(dataOriginal)
