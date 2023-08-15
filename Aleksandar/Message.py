@@ -16,7 +16,7 @@ class Message:
         print('0. Message:')
         print('\t' + plaintext)
 
-        print('1. Security - which symmetric algorithm is chosen: ' + info['symmetric'])
+        print('1. Symmetric encryption:')
         match info['symmetric']:
             case '3DES':
                 print('\t1.1 Message is encrypted with 3DES. ')
