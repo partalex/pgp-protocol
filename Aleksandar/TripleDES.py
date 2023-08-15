@@ -1,5 +1,5 @@
 from Cryptodome.Random import get_random_bytes
-from pyDes import des, CBC, PAD_PKCS5, triple_des
+from pyDes import CBC, PAD_PKCS5, triple_des
 
 
 class TripleDES:
