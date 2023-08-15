@@ -10,18 +10,17 @@ class Message:
 
     @staticmethod
     def send(plaintext, filename, info):
-        # cipherText = plaintext.encode('utf-8')
-        ciphertext = plaintext
+        ciphertext = plaintext.encode('utf-8')
         encryptionInfo = {}
 
         print('1. Security - which symmetric algorithm is chosen:' + info['symmetric'])
         match info['symmetric']:
             case '3DES':
                 print('Message secured with 3DES encryption')
-                ciphertext = AES128.encrypt(ciphertext, info['3DES']['key'])
+                ciphertext = TripleDES.encrypt(ciphertext, info['3DES']['key'], info['3DES']['ivCBC'])
             case 'AES128':
                 print('Message secured with AES128 encryption')
-                ciphertext = TripleDES.encrypt(ciphertext, info['AES128']['key'], info['AES128']['iv'])
+                ciphertext = AES128.encrypt(ciphertext, info['AES128']['key'])
             case _:
                 print('Message not secured')
 
