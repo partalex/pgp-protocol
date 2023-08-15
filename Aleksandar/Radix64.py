@@ -4,7 +4,7 @@ import base64
 class Radix64:
 
     @staticmethod
-    def encodeFromString(plaintexString):
+    def encodeString(plaintexString):
         plaintexString = plaintexString.encode('utf-8')
         return Radix64.encodeBytes(plaintexString)
 
@@ -26,7 +26,7 @@ if __name__ == '__main__':
     message = "Hello Tony, I am Jarvis!"
     print("Message: " + message)
 
-    encoded = Radix64.encodeFromString(message)
+    encoded = Radix64.encodeString(message)
     print("Encoded: " + encoded.decode('utf-8'))
 
     decoded = Radix64.decodeToString(encoded)
