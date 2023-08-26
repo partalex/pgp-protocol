@@ -4,6 +4,19 @@ from Cryptodome.Signature import DSS
 import random
 
 
+class ElGamalPublicKey:
+    def __init__(self, q, h):
+        self.q = q
+        self.h = h
+
+
+class ElGamalPrivateKey:
+    def __init__(self, x, p, q):
+        self.x = x
+        self.p = p
+        self.q = q
+
+
 def power(a, b, c):
     x = 1
     y = a
@@ -24,32 +37,37 @@ def gcd(a, b):
         return gcd(b, a % b)
 
 
-def gen_key(q):
-    key = random.randint(pow(10, 20), q)
-    while gcd(q, key) != 1:
-        key = random.randint(pow(10, 20), q)
+def gen_key(keySize):
+    dsa_key = DSA.generate(keySize)
+    privateKey = ElGamalPrivateKey(dsa_key.x, dsa_key.p, dsa_key.q)
+    h = power(dsa_key.g, dsa_key.x, dsa_key.q)
+    publicKey = ElGamalPublicKey(dsa_key.q, h)
+    return privateKey, publicKey
 
-    return key
+
+def random_num(q):
+    num = random.randint(pow(10, 20), q)
+    while gcd(q, num) != 1:
+        num = random.randint(pow(10, 20), q)
+
+    return num
 
 
-def encrypt(msg, q, h, g):
+def encrypt(msg, publicKey):
     en_msg = []
 
-    k = gen_key(q)  # Private key for sender
-    s = power(h, k, q)
-    p = power(g, k, q)
+    s = power(publicKey.h, random_num(publicKey.q), publicKey.q)
 
     for i in range(0, len(msg)):
         en_msg.append(msg[i])
     for i in range(0, len(en_msg)):
         en_msg[i] = s * ord(en_msg[i])
+    return en_msg
 
-    return en_msg, p
 
-
-def decrypt(en_msg, p, key, q):
+def decrypt(en_msg, privateKey):
     dr_msg = []
-    h = power(p, key, q)
+    h = power(privateKey.p, privateKey.x, privateKey.q)
     for i in range(0, len(en_msg)):
         dr_msg.append(chr(int(en_msg[i] / h)))
 
@@ -57,26 +75,12 @@ def decrypt(en_msg, p, key, q):
 
 
 if __name__ == '__main__':
-    dsa_key = DSA.generate(2048)
+    privateKey, publicKey = gen_key(2048)
     msg = 'encryption'
     msg_stream = bytes(msg, "utf-8")
-    hash_obj = SHA1.new(msg_stream)
-    signer = DSS.new(dsa_key, 'fips-186-3')
-    signature = signer.sign(hash_obj)
     print("Original Message :", msg)
-
-    key = gen_key(dsa_key.q)  # Private key for receiver
-    h = power(dsa_key.g, key, dsa_key.q)
-
-    en_msg, p = encrypt(msg, dsa_key.q, h, dsa_key.g)
-    dr_msg = decrypt(en_msg, p, key, dsa_key.q)
+    en_msg = encrypt(msg, publicKey)
+    dr_msg = decrypt(en_msg, privateKey)
     msg_stream = bytes(''.join(dr_msg), "utf-8")
-    hash_obj = SHA1.new(msg_stream)
-    verifier = DSS.new(dsa_key, 'fips-186-3')
-    try:
-        verifier.verify(hash_obj, signature)
-        print("The message is authentic.")
-    except ValueError:
-        print("The message is not authentic.")
     dmsg = ''.join(dr_msg)
     print("Decrypted Message :", dmsg)

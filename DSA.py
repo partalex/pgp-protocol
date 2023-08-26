@@ -1,12 +1,12 @@
 # https://pycryptodome.readthedocs.io/en/latest/src/public_key/dsa.html
 
-from crypto.Hash import SHA256
-from crypto.PublicKey import DSA
-from crypto.Signature import DSS
+from Cryptodome.Hash import SHA256
+from Cryptodome.PublicKey import DSA
+from Cryptodome.Signature import DSS
 
 # Create a new DSA key
 key = DSA.generate(2048)
-f = open("public_key.pem", "w")
+f = open("public_key.pem", "wb")
 f.write(key.publickey().export_key())
 f.close()
 
