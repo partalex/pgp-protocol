@@ -47,7 +47,7 @@ class RSA:
 
 
 if __name__ == '__main__':
-    RSA.generateKeys(4, 128)
+    RSA.generateKeys(4,2048)
 
     # message = b"Hello Tony, I am Jarvis!"
     # rsaObject = RSA(512, message)
