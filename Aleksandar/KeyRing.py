@@ -1,5 +1,4 @@
 import rsa
-from RSA import RSA
 
 from Aleksandar.FileJSON import FileJSON
 from Aleksandar.Timestamp import Timestamp
@@ -11,7 +10,6 @@ class KeyRing:
         self.__initialise()
 
     def __initialise(self):
-        # read
         self.ring = FileJSON.readFromFile(self.filename)
         for key in self.ring:
             with open("./resources/" + key["publicKey"], 'r') as the_file:
