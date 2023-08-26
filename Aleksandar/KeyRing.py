@@ -1,18 +1,20 @@
 import rsa
+from RSA import RSA
 
 from Aleksandar.FileJSON import FileJSON
 from Aleksandar.Timestamp import Timestamp
 
 
-class Keyring:
-    def __init__(self, filename="keyring"):
+class KeyRing:
+    def __init__(self, filename="./resources/keyring"):
         self.filename = filename
         self.__initialise()
 
     def __initialise(self):
+        # read
         self.ring = FileJSON.readFromFile(self.filename)
         for key in self.ring:
-            with open("./RSAKeys/" + key["publicKey"], 'r') as the_file:
+            with open("./resources/" + key["publicKey"], 'r') as the_file:
                 publicKey = rsa.PublicKey.load_pkcs1(the_file.read().encode('utf8'))
                 key["publicKey"] = publicKey
                 key["timestamp"] = Timestamp.generateString()
@@ -32,8 +34,7 @@ class Keyring:
 
 
 if __name__ == "__main__":
-
-    keyring = Keyring()
+    keyring = KeyRing()
     print("--------------------------------------------------")
     for key in keyring.ring:
         print("Public key: ", key["publicKey"])
