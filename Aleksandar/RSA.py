@@ -5,12 +5,20 @@ from Aleksandar.DictBytes import DictBytes
 
 class RSA:
     @staticmethod
-    def encrypt(plaintext, key):
+    def encrypt(plaintext, key) -> bytes:
         return rsa.encrypt(plaintext, key)
 
     @staticmethod
-    def decrypt(ciphertext, key):
+    def encryptToString(plaintext, key) -> str:
+        return rsa.encrypt(plaintext, key).decode('utf-8')
+
+    @staticmethod
+    def decrypt(ciphertext, key) -> bytes:
         return rsa.decrypt(ciphertext, key)
+
+    @staticmethod
+    def decryptToString(ciphertext, key) -> str:
+        return rsa.decrypt(ciphertext, key).decode('utf-8')
 
     @staticmethod
     def generateKeyPair(keySize):
