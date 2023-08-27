@@ -1,5 +1,7 @@
 import rsa
 
+from Aleksandar.FileManager import FileManager
+
 
 class RSA:
     def __init__(self, key_size, plaintext):
@@ -26,23 +28,13 @@ class RSA:
         return self.__decrypt() == plaintext
 
     @staticmethod
-    def __printToFile(filename, data):
-        with open(filename, 'w') as the_file:
-            print(data, file=the_file)
-            the_file.close()
-
-    @staticmethod
     def generateKeys(numberOfKeys, keySize):
         for i in range(1, numberOfKeys + 1):
             publicKey, privateKey = rsa.newkeys(keySize)
             PUPem = publicKey.save_pkcs1().decode()
             PRPem = privateKey.save_pkcs1().decode()
-            # write to resources dir
-            RSA.__printToFile("./resources/" + str(i) + ".publicKey.pem", PUPem)
-            RSA.__printToFile("./resources/" + str(i) + ".privateKey.pem", PRPem)
-
-            # RSA.__printToFile("./resources" + str(i) + ".publicKey.pem", PUPem)
-            # RSA.__printToFile("./resources" + str(i) + ".privateKey.pem", PRPem)
+            FileManager.writeToFile("./resources/" + str(i) + ".publicKey.pem", PUPem)
+            FileManager.writeToFile("./resources/" + str(i) + ".privateKey.pem", PRPem)
             print("Generated " + str(i) + ".publicKey.pem and " + str(i) + ".privateKey.pem")
 
 
