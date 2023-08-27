@@ -2,6 +2,8 @@ from Cryptodome.Hash import SHA256
 from Cryptodome.PublicKey import DSA as CryptodomeDSA
 from Cryptodome.Signature import DSS
 
+from Aleksandar.FileManager import FileManager
+
 
 class DSA:
     def __init__(self, key, plaintext):
@@ -29,6 +31,18 @@ class DSA:
             return True
         except ValueError:
             return False
+
+    @staticmethod
+    def generateKeys(numberOfKeys, keySize):
+        for i in range(1, numberOfKeys + 1):
+            key = CryptodomeDSA.generate(keySize)
+            PUPem = key.publickey().export_key()
+            PRPem = key.export_key()
+            # write to resources dir
+            ("./resources/" + str(i) + ".publicKey.pem", PUPem)
+            FileManager.writeToFile("./resources/" + str(i) + ".privateKey.pem", PRPem)
+
+            print("Generated " + str(i) + ".publicKey.pem and " + str(i) + ".privateKey.pem")
 
 
 if __name__ == "__main__":
