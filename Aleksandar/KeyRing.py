@@ -30,14 +30,17 @@ class KeyRing:
                 return keyRing["publicKey"]
         raise Exception("Key not found.")
 
+    def print(self):
+        print("--------------------------------------------------")
+        for key in self.ring:
+            print("Public key: ", key["publicKey"])
+            print("Timestamp: ", key["timestamp"])
+            print("Key ID: ", key["keyId"])
+            print("User ID: ", key["userId"])
+            print("Password: ", key["password"])
+            print("--------------------------------------------------")
+
 
 if __name__ == "__main__":
     keyring = KeyRing()
-    print("--------------------------------------------------")
-    for key in keyring.ring:
-        print("Public key: ", key["publicKey"])
-        print("Timestamp: ", key["timestamp"])
-        print("Key ID: ", key["keyId"])
-        print("User ID: ", key["userId"])
-        print("Password: ", key["password"])
-        print("--------------------------------------------------")
+    keyring.print()
