@@ -67,8 +67,11 @@ class DSA:
 if __name__ == "__main__":
     key = CryptodomeDSA.generate(1024)
     dsa = DSA(key, b"Hello")
-    # print(dsa.sign(b"Hello", key))
-    print(dsa.signAndExport(b"Hello", key))
+    exported = DSA.signAndExport(b"Hello", key)
+    print(exported)
+
+    print(DSA.importAndVerify(b"Hello", exported, key))
+
     # print(dsa.getSignature())
     # print(dsa.verify(b"Hello", dsa.signature, dsa.key))
 
