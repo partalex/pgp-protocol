@@ -13,7 +13,7 @@ class DictBytes:
     @staticmethod
     def bytesToDict(inputDict):
         msg_bytes = base64.b64decode(inputDict)
-        ascii_msg = msg_bytes.decode('utf')
+        ascii_msg = msg_bytes.decode('utf-8')
         ascii_msg = ascii_msg.replace("'", "\"")
         output_dict = json.loads(ascii_msg)
         return output_dict
