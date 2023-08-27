@@ -1,3 +1,5 @@
+import base64
+
 from Cryptodome.Hash import SHA256
 from Cryptodome.PublicKey import DSA as CryptodomeDSA
 from Cryptodome.Signature import DSS
@@ -21,11 +23,25 @@ class DSA:
         return self.signature
 
     @staticmethod
-    def sign(plaintext, key):
+    def sign(plaintext, key) -> base64:
         return DSS.new(key, 'fips-186-3').sign(SHA256.new(plaintext))
 
     @staticmethod
-    def verify(plaintext, signature, key):
+    def signAndExport(plaintext, key) -> str:
+        return DSA.sign(plaintext, key).hex()
+
+    @staticmethod
+    def verify(plaintext, signature, key) -> bool:
+        try:
+            DSS.new(key, 'fips-186-3').verify(SHA256.new(plaintext), signature)
+            return True
+        except ValueError:
+            return False
+
+    @staticmethod
+    def importAndVerify(plaintext, signature, key) -> bool:
+        # hex to bytes
+        signature = bytes.fromhex(signature)
         try:
             DSS.new(key, 'fips-186-3').verify(SHA256.new(plaintext), signature)
             return True
@@ -49,15 +65,19 @@ class DSA:
 
 
 if __name__ == "__main__":
-    # dsa = DSA(CryptodomeDSA.generate(1024), b"Hello")
+    key = CryptodomeDSA.generate(1024)
+    dsa = DSA(key, b"Hello")
+    # print(dsa.sign(b"Hello", key))
+    print(dsa.signAndExport(b"Hello", key))
+    # print(dsa.getSignature())
     # print(dsa.verify(b"Hello", dsa.signature, dsa.key))
 
-    key = CryptodomeDSA.generate(1024)
-    keyExported = DSA.exportKey(key)
-    print(keyExported)
-
-    keyImported = DSA.importKey(keyExported)
-    print(keyImported)
+    # key = CryptodomeDSA.generate(1024)
+    # keyExported = DSA.exportKey(key)
+    # print(keyExported)
+    #
+    # keyImported = DSA.importKey(keyExported)
+    # print(keyImported)
 
     # # Create a new DSA key
     # key = CryptodomeDSA.generate(2048)
