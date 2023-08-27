@@ -3,19 +3,25 @@ import json
 from Cryptodome.Random import get_random_bytes
 
 
-class FileJSON:
+class FileManager:
     @staticmethod
-    def writeToFile(filename, data):
+    def jsonWriteToFile(filename, data):
         json_object = json.dumps(data, indent=4)
 
         with open(filename + ".JSON", "w") as outfile:
             outfile.write(json_object)
 
     @staticmethod
-    def readFromFile(filename):
+    def jsonReadFromFile(filename):
         with open(filename + ".JSON", "r") as read_file:
             data = json.load(read_file)
         return data
+
+    @staticmethod
+    def writeToFile(filenameWithExtension, data):
+        with open(filenameWithExtension, 'w') as outfile:
+            print(data, file=outfile)
+            outfile.close()
 
 
 if __name__ == '__main__':
@@ -37,5 +43,5 @@ if __name__ == '__main__':
     }
     filenameTest = "TestJSON"
 
-    FileJSON.writeToFile(filenameTest, test)
-    print(FileJSON.readFromFile(filenameTest))
+    FileManager.jsonWriteToFile(filenameTest, test)
+    print(FileManager.jsonReadFromFile(filenameTest))
