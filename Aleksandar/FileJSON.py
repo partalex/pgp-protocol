@@ -35,7 +35,7 @@ if __name__ == '__main__':
         'wantCompression': True,  # or False
         'wantRadix64': True  # or False
     }
-    filename = "TestJSON"
+    filenameTest = "TestJSON"
 
-    FileJSON.writeToFile(filename, test)
-    print(FileJSON.readFromFile(filename))
+    FileJSON.writeToFile(filenameTest, test)
+    print(FileJSON.readFromFile(filenameTest))
