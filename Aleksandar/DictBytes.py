@@ -4,15 +4,15 @@ import json
 
 class DictBytes:
     @staticmethod
-    def dictToBytes(input_dict):
-        message = str(input_dict)
+    def dictToBytes(inputDict):
+        message = str(inputDict)
         ascii_message = message.encode('utf-8')
         output_byte = base64.b64encode(ascii_message)
         return output_byte
 
     @staticmethod
-    def bytesToDict(input_byte):
-        msg_bytes = base64.b64decode(input_byte)
+    def bytesToDict(inputDict):
+        msg_bytes = base64.b64decode(inputDict)
         ascii_msg = msg_bytes.decode('utf')
         ascii_msg = ascii_msg.replace("'", "\"")
         output_dict = json.loads(ascii_msg)
