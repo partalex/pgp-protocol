@@ -53,7 +53,8 @@ if __name__ == '__main__':
     print("Dekriptovana poruka:", elgamal.verify())
 
     print("-------------------ELGAMAL-------------------")
-    message = "lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua"
+    message = ("lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et"
+               " dolore magna aliqua")
     messageToInt = int.from_bytes(message.encode(), 'big')
     elgamal = ElGamal(messageToInt, 1024)
 
