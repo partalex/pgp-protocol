@@ -33,9 +33,13 @@ class RSA:
             publicKey, privateKey = rsa.newkeys(keySize)
             PUPem = publicKey.save_pkcs1().decode()
             PRPem = privateKey.save_pkcs1().decode()
-            FileManager.writeToFile("./resources/" + str(i) + ".publicKey.pem", PUPem)
-            FileManager.writeToFile("./resources/" + str(i) + ".privateKey.pem", PRPem)
+            FileManager.writeToFile("./resources/RSAKeys/" + str(i) + ".publicKey.pem", PUPem)
+            FileManager.writeToFile("./resources/RSAKeys/" + str(i) + ".privateKey.pem", PRPem)
             print("Generated " + str(i) + ".publicKey.pem and " + str(i) + ".privateKey.pem")
+
+    @staticmethod
+    def generateKeyPair(keySize):
+        return rsa.newkeys(keySize)
 
 
 if __name__ == '__main__':
