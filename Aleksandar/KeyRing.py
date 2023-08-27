@@ -42,5 +42,5 @@ class KeyRing:
 
 
 if __name__ == "__main__":
-    keyring = KeyRing()
-    keyring.print()
+    keyRing = KeyRing()
+    keyRing.print()
