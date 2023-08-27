@@ -13,6 +13,14 @@ class TripleDES:
         return triple_des(key, CBC, IV, pad=None, padmode=PAD_PKCS5).encrypt(plaintext)
 
     @staticmethod
+    def encryptAndExport(plaintext, key, IV="00000000") -> str:
+        return triple_des(key, CBC, IV, pad=None, padmode=PAD_PKCS5).encrypt(plaintext).hex()
+
+    @staticmethod
+    def importAndDecrypt(plaintext, key, IV="00000000"):
+        return triple_des(key, CBC, IV, pad=None, padmode=PAD_PKCS5).decrypt(bytes.fromhex(plaintext))
+
+    @staticmethod
     def generateKey(key, IV="00000000"):
         return triple_des(key, CBC, IV, pad=None, padmode=PAD_PKCS5)
 
@@ -37,16 +45,13 @@ class TripleDES:
 
 if __name__ == '__main__':
     key = "1234567_1234567_1234567_"  # can be 16B or 24B
-    plaintext = "Please encrypt my data with 24B key."
+    plaintext = b"Please encrypt my data with 24B key."
 
-    ciphertext_1 = TripleDES.encrypt(plaintext, key)
-    ciphertext_2 = TripleDES.encrypt(plaintext, key)
+    ciphertext = TripleDES.encryptAndExport(plaintext, key)
+    print("Ciphertext:", ciphertext)
 
-    originalText24B_1 = TripleDES.decrypt(ciphertext_1, key)
-    originalText24B_2 = TripleDES.decrypt(ciphertext_1, key)
-
-    print("Original message 1:", originalText24B_1.decode())
-    print("Original message 2:", originalText24B_2.decode())
+    originalText = TripleDES.importAndDecrypt(ciphertext, key)
+    print("Original message:", originalText)
 
     # iv = "12345678"
     #
