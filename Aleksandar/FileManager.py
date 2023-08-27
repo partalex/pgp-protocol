@@ -23,6 +23,13 @@ class FileManager:
             print(data, file=outfile)
             outfile.close()
 
+    @staticmethod
+    def readFromFile(filenameWithExtension):
+        with open(filenameWithExtension, 'r') as infile:
+            data = infile.read()
+            infile.close()
+        return data
+
 
 if __name__ == '__main__':
     test = {  # read from file
