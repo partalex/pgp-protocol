@@ -25,14 +25,21 @@ class RSA:
 
 if __name__ == '__main__':
     message = b"Hello Tony, I am Jarvis!"
+    print("-" * 50)
 
     # encrypt with public key
-    pr, pu = rsa.newkeys(512)
-    ciphertext = rsa.encrypt(message, pr)
-    verify = rsa.decrypt(ciphertext, pu)
-    print("Verify: ", verify == message)
+    print("Encrypt and decrypt with RSA.")
+    pu, pr = keys = RSA.generateKeyPair(512)
+    ciphertext = RSA.encrypt(pu, message)
+    print(message)
+    print(ciphertext)
+    print(RSA.decrypt(ciphertext, pr))
 
-    # encrypt with private key
-    ciphertext = rsa.encrypt(message, pu)
-    verify = rsa.decrypt(ciphertext, pr)
-    print("Verify: ", verify == message)
+    # sign with private key
+    print()
+    print("-" * 50)
+    print("Sign and verify with RSA.")
+    signature = RSA.sign(message, pr)
+    print("Signature: ", signature)
+    print(RSA.verify(message, signature, pu))
+    print("-" * 50)
