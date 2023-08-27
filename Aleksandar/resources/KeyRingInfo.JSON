@@ -1,6 +1,6 @@
 [
   {
-    "keySize": 128,
+    "keySize": 512,
     "userId": "avasilic99@gmail.com",
     "password": "aco",
     "type": "RSA"
