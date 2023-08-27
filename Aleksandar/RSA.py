@@ -1,53 +1,46 @@
 import rsa
 
-from Aleksandar.FileManager import FileManager
-
 
 class RSA:
-    def __init__(self, key_size, plaintext):
-        self.keySize = key_size
-        self.plaintext = plaintext
-        self.publicKey, self.privateKey = rsa.newkeys(self.keySize)
-        self.ciphertext = self.__encrypt()
-
-    def __int__(self, private_key, plaintext):
-        self.privateKey = private_key
-        self.plaintext = plaintext
-        self.ciphertext = self.__encrypt()
-
-    def __encrypt(self):
-        return rsa.encrypt(self.plaintext, self.publicKey)
-
-    def __decrypt(self):
-        return rsa.decrypt(self.ciphertext, self.privateKey)
-
-    def getCiphertext(self):
-        return self.ciphertext
-
-    def verify(self, plaintext):
-        return self.__decrypt() == plaintext
+    @staticmethod
+    def encrypt(key, plaintext):
+        return rsa.encrypt(plaintext, key)
 
     @staticmethod
-    def generateKeys(numberOfKeys, keySize):
-        for i in range(1, numberOfKeys + 1):
-            publicKey, privateKey = rsa.newkeys(keySize)
-            PUPem = publicKey.save_pkcs1().decode()
-            PRPem = privateKey.save_pkcs1().decode()
-            FileManager.writeToFile("./resources/RSAKeys/" + str(i) + ".publicKey.pem", PUPem)
-            FileManager.writeToFile("./resources/RSAKeys/" + str(i) + ".privateKey.pem", PRPem)
-            print("Generated " + str(i) + ".publicKey.pem and " + str(i) + ".privateKey.pem")
+    def decrypt(ciphertext, key):
+        return rsa.decrypt(ciphertext, key)
 
     @staticmethod
     def generateKeyPair(keySize):
         return rsa.newkeys(keySize)
 
+    @staticmethod
+    def sign(message, privateKey):
+        return rsa.sign(message, privateKey, 'SHA-1')
+
+    @staticmethod
+    def verify(message, signature, publicKey):
+        return rsa.verify(message, signature, publicKey) == 'SHA-1'
+
 
 if __name__ == '__main__':
-    RSA.generateKeys(4, 2048)
+    message = b"Hello Tony, I am Jarvis!"
+    PU, PR = RSA.generateKeyPair(512)
 
-    # message = b"Hello Tony, I am Jarvis!"
-    # rsaObject = RSA(512, message)
-    #
-    # print("Message: " + message.decode('utf-8'))
-    # print("Ciphertext: " + str(rsaObject.getCiphertext()))
-    # print("Verify: " + str(rsaObject.verify(message)))
+    print("Private key: ", PR)
+    print("Public key: ", PU)
+    rsaObject = RSA(PU, message)
+    ciphertext = rsaObject.getCiphertext()
+    print("Ciphertext: ", ciphertext)
+    print("Verify: ", rsaObject.verify(PR))
+
+    # encrypt with public key
+    pr, pu = rsa.newkeys(512)
+    ciphertext = rsa.encrypt(message, pr)
+    verify = rsa.decrypt(ciphertext, pu)
+    print("Verify: ", verify == message)
+
+    # encrypt with private key
+    ciphertext = rsa.encrypt(message, pu)
+    verify = rsa.decrypt(ciphertext, pr)
+    print("Verify: ", verify == message)
