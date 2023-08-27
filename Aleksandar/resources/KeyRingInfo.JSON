@@ -1,0 +1,14 @@
+[
+  {
+    "keySize": 128,
+    "userId": "avasilic99@gmail.com",
+    "password": "aco",
+    "type": "RSA"
+  },
+  {
+    "keySize": 1024,
+    "userId": "avasilic99@gmail.com",
+    "password": "pera",
+    "type": "DSA"
+  }
+]
