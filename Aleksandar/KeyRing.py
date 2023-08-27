@@ -1,22 +1,36 @@
 import rsa
+from Cryptodome.PublicKey import DSA as CryptodomeDSA
 
-from Aleksandar.FileJSON import FileJSON
-from Aleksandar.Timestamp import Timestamp
+from Aleksandar.DSA import DSA
+from RSA import RSA
+from Timestamp import Timestamp
 
 
 class KeyRing:
-    def __init__(self, filename="./resources/keyring"):
-        self.filename = filename
-        self.__initialise()
+    def __init__(self):
+        self.ring = []
 
-    def __initialise(self):
-        self.ring = FileJSON.readFromFile(self.filename)
-        for keyRing in self.ring:
-            with open("./resources/" + keyRing["publicKey"], 'r') as the_file:
-                publicKey = rsa.PublicKey.load_pkcs1(the_file.read().encode('utf8'))
-                keyRing["publicKey"] = publicKey
-                keyRing["timestamp"] = Timestamp.generateString()
-                keyRing["keyId"] = keyRing["publicKey"].n % 2 ** 32  # TODO - Check if this is correct.
+    def generateRSAKeys(self, keySize, userId, password):
+        PUPem, PRPem = RSA.generateKeyPair(keySize)
+        self.ring.append({
+            "publicKey": PUPem,
+            "privateKey": PRPem,
+            "timestamp": Timestamp.generateString(),
+            "keyId": PUPem.n % 2 ** 32,
+            "userId": userId,
+            "password": password
+        })
+
+    def generateDSAKeys(self, keySize, userId, password):
+        PUPem, PRPem = DSA.generateKeyPair(keySize)
+        self.ring.append({
+            "publicKey": PUPem.decode('utf-8'),
+            "privateKey": PRPem.decode('utf-8'),
+            "timestamp": Timestamp.generateString(),
+            "keyId": DSA.importKey(PUPem).y % 2 ** 32,
+            "userId": userId,
+            "password": password
+        })
 
     def getPublicKeyByKeyId(self, keyId):
         for keyRing in self.ring:
@@ -34,6 +48,7 @@ class KeyRing:
         print("--------------------------------------------------")
         for key in self.ring:
             print("Public key: ", key["publicKey"])
+            # print("Private key: ", key["privateKey"])
             print("Timestamp: ", key["timestamp"])
             print("Key ID: ", key["keyId"])
             print("User ID: ", key["userId"])
