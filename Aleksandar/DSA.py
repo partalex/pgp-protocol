@@ -1,5 +1,5 @@
 from Cryptodome.Hash import SHA256
-from Cryptodome.PublicKey import DSA as Dsa
+from Cryptodome.PublicKey import DSA as CryptodomeDSA
 from Cryptodome.Signature import DSS
 
 
@@ -32,13 +32,11 @@ class DSA:
 
 
 if __name__ == "__main__":
-    # Aleksandar - testiranje klase
-    dsa = DSA(Dsa.generate(2048), b"Hello")
+    dsa = DSA(CryptodomeDSA.generate(2048), b"Hello")
     print(dsa.verify(b"Hello", dsa.signature, dsa.key))
 
-    # Marko
     # Create a new DSA key
-    key = Dsa.generate(2048)
+    key = CryptodomeDSA.generate(2048)
     f = open("public_key.pem", "wb")
     f.write(key.publickey().export_key())
     f.close()
@@ -52,7 +50,7 @@ if __name__ == "__main__":
     # Load the public key
     f = open("public_key.pem", "r")
     hash_obj = SHA256.new(message)
-    pub_key = Dsa.import_key(f.read())
+    pub_key = CryptodomeDSA.import_key(f.read())
     verifier = DSS.new(pub_key, 'fips-186-3')
 
     # Verify the authenticity of the message
