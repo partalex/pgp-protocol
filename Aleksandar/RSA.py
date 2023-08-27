@@ -33,8 +33,16 @@ class RSA:
         return rsa.sign(message, privateKey, 'SHA-1')
 
     @staticmethod
+    def signAndExport(message, privateKey) -> str:
+        return rsa.sign(message, privateKey, 'SHA-1').hex()
+
+    @staticmethod
     def verify(message, signature, publicKey):
         return rsa.verify(message, signature, publicKey) == 'SHA-1'
+
+    @staticmethod
+    def importAndVerify(message, signature, publicKey):
+        return rsa.verify(message, bytes.fromhex(signature), publicKey) == 'SHA-1'
 
     @staticmethod
     def exportKey(key) -> str:
@@ -68,6 +76,9 @@ if __name__ == '__main__':
     print("-" * 50)
     print("Sign and verify with RSA.")
     signature = RSA.sign(message, pr)
+    print(signature)
+    # test type of signature
+    print(signature.hex())
     print("Signature: ", signature)
     print(RSA.verify(message, signature, pu))
     print("-" * 50)
