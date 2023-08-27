@@ -1,0 +1,10 @@
+{
+  "message": "Hello World!",
+  "filename": "SendInfo.JSON",
+  "authentication": "RSA",
+  "encryption": "3DES",
+  "signature": "RSA",
+  "senderPrivateKey": "senderPrivateKey",
+  "receiverPublicKey": "receiverPublicKey",
+  "savePath": "resources/ReceiveInfo"
+}
