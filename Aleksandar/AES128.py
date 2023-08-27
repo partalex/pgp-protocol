@@ -6,6 +6,20 @@ from Cryptodome.Util.Padding import pad, unpad
 
 
 class AES128:
+    def __init__(self, key, plaintext):
+        self.key = key
+        self.plaintext = plaintext
+        self.ciphertext = self.__encrypt()
+
+    def __encrypt(self):
+        return AES128.encrypt(self.plaintext, self.key)
+
+    def __decrypt(self):
+        return AES128.decrypt(self.ciphertext, self.key)
+
+    def getCiphertext(self):
+        return self.ciphertext
+
     @staticmethod
     def encrypt(plaintext, key):
         cipher_encrypt = AES.new(key, AES.MODE_CBC)
