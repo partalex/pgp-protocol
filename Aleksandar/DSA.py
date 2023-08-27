@@ -33,16 +33,15 @@ class DSA:
             return False
 
     @staticmethod
-    def generateKeys(numberOfKeys, keySize):
-        for i in range(1, numberOfKeys + 1):
-            key = CryptodomeDSA.generate(keySize)
-            PUPem = key.publickey().export_key()
-            PRPem = key.export_key()
-            # write to resources dir
-            ("./resources/" + str(i) + ".publicKey.pem", PUPem)
-            FileManager.writeToFile("./resources/" + str(i) + ".privateKey.pem", PRPem)
+    def generateKeyPair(keySize):
+        key = CryptodomeDSA.generate(keySize)
+        PUPem = key.publickey().export_key()
+        PRPem = key.export_key()
+        return PUPem, PRPem
 
-            print("Generated " + str(i) + ".publicKey.pem and " + str(i) + ".privateKey.pem")
+    @staticmethod
+    def importKey(key):
+        return CryptodomeDSA.import_key(key)
 
 
 if __name__ == "__main__":
