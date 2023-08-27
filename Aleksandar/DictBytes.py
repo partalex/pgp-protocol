@@ -27,7 +27,7 @@ if __name__ == '__main__':
         'var2': 'some string',
         'var3': ['listitem1', 'listitem2', 5]
     }
-    
+
     print("input_dict:", input_dict, type(input_dict))
     print("-" * 50)
 
