@@ -32,6 +32,13 @@ class AES128:
         return {"iv": iv, "ciphertext": ct}
 
     @staticmethod
+    def encryptAndExport(plaintext, key):
+        data = AES128.encrypt(plaintext, key)
+        iv = data['iv'].decode('utf-8')
+        ciphertext = data['ciphertext'].decode('utf-8')
+        return {"iv": iv, "ciphertext": ciphertext}
+
+    @staticmethod
     def decrypt(ciphertext, key, iv):
         iv = b64decode(iv)
         ciphertext = b64decode(ciphertext)
@@ -39,15 +46,35 @@ class AES128:
         plaintext = unpad(cipher_decrypt.decrypt(ciphertext), AES.block_size)
         return plaintext
 
+    @staticmethod
+    def importAndDecrypt(ciphertext, key, iv):
+        iv = iv.encode('utf-8')
+        ciphertext = ciphertext.encode('utf-8')
+        return AES128.decrypt(ciphertext, key, iv)
+
 
 if __name__ == "__main__":
     key = get_random_bytes(16)
     message = b'Hello World'
     print("Plaintext: \n\t" + message.decode())
 
-    data = AES128.encrypt(message, key)
-    print("Encryption parameters:")
-    print("\tiv = " + data['iv'].decode('utf-8'))
-    print("\tct = " + data['ciphertext'].decode('utf-8'))
+    data = AES128.encryptAndExport(message, key)
 
-    print("Original message: \n\t" + AES128.decrypt(data['ciphertext'], key, data['iv']).decode('utf-8'))
+    ciphertext = data['ciphertext']
+    iv = data['iv']
+
+    print("Encryption parameters:")
+    print("\tiv = " + iv)
+    print("\tct = " + ciphertext)
+
+    print("Original message: \n\t" + AES128.importAndDecrypt(ciphertext, key, iv).decode('utf-8'))
+
+    # data = AES128.encrypt(message, key)
+    # print("Encryption parameters:")
+    # print("\tiv = " + data['iv'].decode('utf-8'))
+    # print("\tct = " + data['ciphertext'].decode('utf-8'))
+    #
+    # ciphertext = data['ciphertext']
+    # iv = data['iv']
+    #
+    # print("Original message: \n\t" + AES128.decrypt(ciphertext, key, iv).decode('utf-8'))
