@@ -9,12 +9,16 @@ class RSA:
         return rsa.encrypt(plaintext, key)
 
     @staticmethod
-    def encryptToString(plaintext, key) -> str:
+    def encryptAndExport(plaintext, key) -> str:
         return rsa.encrypt(plaintext, key).decode('utf-8')
 
     @staticmethod
     def decrypt(ciphertext, key) -> bytes:
         return rsa.decrypt(ciphertext, key)
+
+    @staticmethod
+    def importAndDecrypt(ciphertext, key) -> bytes:
+        return rsa.decrypt(ciphertext.encode('utf-8'), key)
 
     @staticmethod
     def decryptToString(ciphertext, key) -> str:
