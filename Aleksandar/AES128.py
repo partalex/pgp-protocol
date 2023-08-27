@@ -1,3 +1,4 @@
+import os
 from base64 import b64encode, b64decode
 
 from Cryptodome.Cipher import AES
@@ -9,13 +10,13 @@ class AES128:
     def __init__(self, key, plaintext):
         self.key = key
         self.plaintext = plaintext
-        self.ciphertext = self.__encrypt()
+        self.iv, self.ciphertext = self.__encrypt()
 
     def __encrypt(self):
         return AES128.encrypt(self.plaintext, self.key)
 
     def __decrypt(self):
-        return AES128.decrypt(self.ciphertext, self.key)
+        return AES128.decrypt(self.ciphertext, self.key, self.iv)
 
     def getCiphertext(self):
         return self.ciphertext
@@ -34,7 +35,7 @@ class AES128:
     def decrypt(ciphertext, key, iv):
         iv = b64decode(iv)
         ciphertext = b64decode(ciphertext)
-        cipher_decrypt = AES.new(key, AES.MODE_CBC, iv)
+        cipher_decrypt = AES.new(key, AES.MODE_CBC, IV=iv)
         plaintext = unpad(cipher_decrypt.decrypt(ciphertext), AES.block_size)
         return plaintext
 
