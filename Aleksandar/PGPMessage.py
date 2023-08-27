@@ -26,8 +26,8 @@ class PGPMessage:
         }
 
     @staticmethod
-    def send(userId, filename, message, authentication, encryption, signature, senderPrivateKey=None,
-             receiverPublicKey=None):
+    def send(filename, message, authentication, encryption, signature, senderPrivateKey=None,
+             receiverPublicKey=None, savePath="./resources/ReceiveInfo"):
         # 0. Prepare message.                              # Required
         # Add timestamp to the message.
         # Add file name to the message.
@@ -102,11 +102,11 @@ class PGPMessage:
         # 4. Convert to radix64                             # Required
         message = Radix64.encodeBytes(message)
 
-        # Send Message.
-        return message
-
     @staticmethod
-    def receive(message, receiverPrivateKey=None):
+    def receive(savePath="./resources/ReceiveInfo"):
+        # Load message info.
+        message = "Load message from file."
+
         # 4. Convert from radix64                       # Required
         message = Radix64.decodeToBytes(message)
 
@@ -147,7 +147,7 @@ class PGPMessage:
 
 
 if __name__ == '__main__':
-    message = b"Hello Tony, I am Jarvis!"
+    plaintext = b"Hello Tony, I am Jarvis!"
     userId = "avasilic99@gmail.com"
 
     # Test 1. {NONE, NONE, NONE}
@@ -155,8 +155,8 @@ if __name__ == '__main__':
     encryption = "NONE"  # [3DES, AES128, NONE]
     signature = "NONE"  # [RSA, ElGamal, NONE] # if encryption is NONE, signature must be NONE too.
 
-    ciphertext = PGPMessage.send(userId, "test.txt", message, authentication, encryption, signature).decode('utf-8')
-    print(PGPMessage.receive(ciphertext).decode('utf-8'))
+    filePath = PGPMessage.send(userId, "test.txt", plaintext, authentication, encryption, signature).decode('utf-8')
+    print(PGPMessage.receive(filePath).decode('utf-8'))
 
     # Test 2. {RSA, 3DES, RSA}
     # Test 3. {DSA, AES128, RSA}
