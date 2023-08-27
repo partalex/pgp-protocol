@@ -3,19 +3,22 @@ from Cryptodome.Random import get_random_bytes
 
 
 class TripleDES:
-    def __init__(self, key, plaintext):
+    def __init__(self, key, plaintext, IV="00000000"):
         self.key = key
         self.plaintext = plaintext
-        self.temp = triple_des(key, CBC, "12345678", pad=None, padmode=PAD_PKCS5)
-        self.ciphertext = TripleDES.encrypt(self.temp, self.plaintext)
+        self.ciphertext = TripleDES.encrypt(plaintext, key, IV)
 
     @staticmethod
-    def encrypt(temp, plaintext):
-        return temp.encrypt(plaintext)
+    def encrypt(plaintext, key, IV="00000000"):
+        return triple_des(key, CBC, IV, pad=None, padmode=PAD_PKCS5).encrypt(plaintext)
 
     @staticmethod
-    def decrypt(temp, ciphertext):
-        return temp.decrypt(ciphertext)
+    def generateKey(key, IV="00000000"):
+        return triple_des(key, CBC, IV, pad=None, padmode=PAD_PKCS5)
+
+    @staticmethod
+    def decrypt(ciphertext, key, IV="00000000"):
+        return triple_des(key, CBC, IV, pad=None, padmode=PAD_PKCS5).decrypt(ciphertext)
 
     def getCiphertext(self):
         return self.ciphertext
@@ -23,22 +26,27 @@ class TripleDES:
     def verify(self):
         return self.plaintext == TripleDES.decrypt(self.temp, self.ciphertext).decode('utf-8')
 
+    @staticmethod
+    def importKey(key) -> str:
+        return key
+
+    @staticmethod
+    def exportKey(key) -> str:
+        return key
+
 
 if __name__ == '__main__':
     key = "1234567_1234567_1234567_"  # can be 16B or 24B
     plaintext = "Please encrypt my data with 24B key."
 
-    tripleDES = TripleDES(key, plaintext)
-    ciphertext = tripleDES.getCiphertext()
+    ciphertext_1 = TripleDES.encrypt(plaintext, key)
+    ciphertext_2 = TripleDES.encrypt(plaintext, key)
 
-    print("Plaintext:", plaintext)
-    print("Ciphertext:", ciphertext)
+    originalText24B_1 = TripleDES.decrypt(ciphertext_1, key)
+    originalText24B_2 = TripleDES.decrypt(ciphertext_1, key)
 
-    print(ciphertext)
-    print(ciphertext.hex())
-    # cast ciphertext to string
-
-    print(tripleDES.verify())
+    print("Original message 1:", originalText24B_1.decode())
+    print("Original message 2:", originalText24B_2.decode())
 
     # iv = "12345678"
     #
