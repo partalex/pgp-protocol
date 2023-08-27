@@ -3,7 +3,7 @@ import rsa
 
 class RSA:
     @staticmethod
-    def encrypt(key, plaintext):
+    def encrypt(plaintext, key):
         return rsa.encrypt(plaintext, key)
 
     @staticmethod
@@ -30,7 +30,7 @@ if __name__ == '__main__':
     # encrypt with public key
     print("Encrypt and decrypt with RSA.")
     pu, pr = keys = RSA.generateKeyPair(512)
-    ciphertext = RSA.encrypt(pu, message)
+    ciphertext = RSA.encrypt(message, pu)
     print(message)
     print(ciphertext)
     print(RSA.decrypt(ciphertext, pr))
