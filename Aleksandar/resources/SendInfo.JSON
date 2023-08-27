@@ -1,6 +1,6 @@
 {
   "message": "Hello World!",
-  "filename": "SendInfo.JSON",
+  "output": "ciphertext.txt",
   "authentication": "RSA",
   "encryption": "3DES",
   "signature": "RSA",
