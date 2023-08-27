@@ -25,14 +25,6 @@ class RSA:
 
 if __name__ == '__main__':
     message = b"Hello Tony, I am Jarvis!"
-    PU, PR = RSA.generateKeyPair(512)
-
-    print("Private key: ", PR)
-    print("Public key: ", PU)
-    rsaObject = RSA(PU, message)
-    ciphertext = rsaObject.getCiphertext()
-    print("Ciphertext: ", ciphertext)
-    print("Verify: ", rsaObject.verify(PR))
 
     # encrypt with public key
     pr, pu = rsa.newkeys(512)
