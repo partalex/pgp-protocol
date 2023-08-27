@@ -1,4 +1,5 @@
 from pyDes import *
+from Cryptodome.Random import get_random_bytes
 
 
 class TripleDES:
@@ -25,14 +26,21 @@ class TripleDES:
 
 if __name__ == '__main__':
     key = "1234567_1234567_1234567_"  # can be 16B or 24B
+    plaintext = "Please encrypt my data with 24B key."
 
-    tripleDES = TripleDES(key, "Please encrypt my data with 24B key.")
+    tripleDES = TripleDES(key, plaintext)
     ciphertext = tripleDES.getCiphertext()
+
+    print("Plaintext:", plaintext)
+    print("Ciphertext:", ciphertext)
+
     print(ciphertext)
+    print(ciphertext.hex())
+    # cast ciphertext to string
+
     print(tripleDES.verify())
 
     # iv = "12345678"
-    # plaintext = "Please encrypt my data with 24B key."
     #
     # temp = triple_des(key, CBC, iv, pad=None, padmode=PAD_PKCS5)
     # cipher = temp.encrypt(plaintext)
