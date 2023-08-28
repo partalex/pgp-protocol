@@ -104,7 +104,7 @@ if __name__ == '__main__':
     # test type of signature
     print(signature.hex())
     print("Signature: ", signature)
-    print(RSA.importAndVerify(message, signature, pu))
+    print(RSA.importAndDecrypt(message, signature, pu))
     print("-" * 50)
 
     pu, pr = RSA.generateKeyPair(512)
