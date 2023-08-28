@@ -1,0 +1,10 @@
+{
+  "Message": "Hello World!",
+  "Output": "ciphertext.txt",
+  "Authentication algorithm": "RSA",
+  "Signature algorithm": "3DES",
+  "Encryption algorithm": "RSA",
+  "Sender private key": "senderPrivateKey",
+  "Receiver private key": "receiverPublicKey",
+  "Save path": "resources/ReceiveInfo"
+}
