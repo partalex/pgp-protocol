@@ -35,11 +35,11 @@ class TripleDES:
         return self.plaintext == TripleDES.decrypt(self.temp, self.ciphertext).decode('utf-8')
 
     @staticmethod
-    def importKey(key) -> str:
+    def importKey(key) -> bytes:
         return key
 
     @staticmethod
-    def exportKey(key) -> str:
+    def exportKey(key) -> bytes:
         return key
 
 
