@@ -19,35 +19,56 @@ if __name__ == "__main__":
         else:
             raise Exception("Invalid key type.")
     # keyRing.print()
-    # exit(0)
 
-    # Load message info.
-    input_info_1 = "./resources/input_info_1"
-    input_info_2 = "./resources/input_info_2"
-    send_info = FileManager.jsonReadFromFile(input_info_1)
-    # send_info = FileManager.jsonReadFromFile(input_info_2)
+    test = 1
+    
+    if test == 0:
+        input_info = "./resources/input_info_0"
 
-    # Prepare parameters.
-    message = send_info['Message']
-    output = send_info['Output']
+    if test == 1:
+        input_info = "./resources/input_info_1"
+
+    # Test 2
+    if test == 2:
+        input_info = "./resources/input_info_2"
+
+    send_info = FileManager.jsonReadFromFile(input_info)
+
     authentication_alg = send_info['Authentication algorithm']  # [RSA, DSA, NONE].
-    signature_alg = send_info['Signature algorithm']  # [RSA, ElGamal, DSA), NONE]
-    encryption_alg = send_info['Encryption algorithm']  # [3DES, AES128, NONE]
+    signature_alg = send_info['Signature algorithm']  # [3DES, AES128, NONE]
+    encryption_alg = send_info['Encryption algorithm']  # [RSA, (ElGamal, DSA), NONE]
     savePath = send_info['Save path']
 
-    authentication_key = keyRing.ring[0]['Private key']  # [{RSA}, DSA, NONE]
-    authentication_key_id = keyRing.ring[0]['Key Id']  # [{RSA}, DSA, NONE]
-    signature_key = get_random_bytes(24)  # [{3DES}, AES128, NONE]
-    encryption_key = keyRing.ring[0]['Public key']  # [{RSA}, ElGamal, NONE]
+    if test == 0:
+        authentication_key = "No"
+        authentication_key_id = "No"
+        signature_key = "No"
+        encryption_key = "No"
+
+    if test == 1:
+        authentication_key = keyRing.ring[0]['Private key']  # [{RSA}, DSA, NONE]
+        authentication_key_id = keyRing.ring[0]['Key Id']
+        signature_key = get_random_bytes(24)  # [{3DES}, AES128, NONE]
+        encryption_key = keyRing.ring[0]['Public key']  # [{RSA}, ElGamal, NONE]
+
+    if test == 2:
+        authentication_key = keyRing.ring[2]['Private key']  # [RSA, {DSA}, NONE]
+        authentication_key_id = keyRing.ring[2]['Key Id']
+        signature_key = get_random_bytes(16)  # [3DES, {AES128}, NONE]
+        encryption_key = keyRing.ring[1]['Public key']  # [RSA, {ElGamal}, NONE]
+
+    message = send_info['Message']
+    output = send_info['Output']
 
     # Send message.
     print("Message: " + message)
     print("Sending message...")
+
     ciphertext = PGPMessage.send(
         output, message,
         authentication_alg, signature_alg, encryption_alg,
-        authentication_key, signature_key, encryption_key,
-        savePath)  # TODO - Missing session key.
+        authentication_key, signature_key, encryption_key
+        , savePath)
 
     # Receive message.
     originalMessage = PGPMessage.receive(ciphertext, keyRing)
