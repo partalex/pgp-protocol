@@ -1,6 +1,3 @@
-import rsa
-from Cryptodome.PublicKey import DSA as CryptodomeDSA
-
 from Aleksandar.DSA import DSA
 from RSA import RSA
 from Timestamp import Timestamp
@@ -13,12 +10,13 @@ class KeyRing:
     def generateRSAKeys(self, keySize, userId, password):
         PUPem, PRPem = RSA.generateKeyPair(keySize)
         self.ring.append({
-            "publicKey": PUPem,
-            "privateKey": PRPem,
-            "timestamp": Timestamp.generateString(),
-            "keyId": PUPem.n % 2 ** 32,
-            "userId": userId,
-            "password": password
+            "Public key": PUPem,
+            "Private key": PRPem,
+            "Timestamp": Timestamp.generateString(),
+            "Key Id": PUPem.n % 2 ** 32,
+            "User Id": userId,
+            "Password": password,
+            "Type": "RSA"
         })
 
     def generateDSAKeys(self, keySize, userId, password):
@@ -29,8 +27,15 @@ class KeyRing:
             "timestamp": Timestamp.generateString(),
             "keyId": DSA.importKey(PUPem).y % 2 ** 32,
             "userId": userId,
-            "password": password
+            "password": password,
+            "type": "DSA"
         })
+
+    def getPrivateKeyByKeyId(self, keyId):
+        for keyRing in self.ring:
+            if keyRing["keyId"] == keyId:
+                return keyRing["privateKey"]
+        raise Exception("Key not found.")
 
     def getPublicKeyByKeyId(self, keyId):
         for keyRing in self.ring:
@@ -47,15 +52,18 @@ class KeyRing:
     def print(self):
         print("--------------------------------------------------")
         for key in self.ring:
-            print("Public key: ", key["publicKey"])
-            # print("Private key: ", key["privateKey"])
-            print("Timestamp: ", key["timestamp"])
-            print("Key ID: ", key["keyId"])
-            print("User ID: ", key["userId"])
-            print("Password: ", key["password"])
+            ## print all fields
+            print("Public key: ", key["Public key"])
+            print("Private key: ", key["Private key"])
+            print("Timestamp: ", key["Timestamp"])
+            print("Key Id: ", key["Key Id"])
+            print("User Id: ", key["User Id"])
+            print("Password: ", key["Password"])
+            print("Type: ", key["Type"])
             print("--------------------------------------------------")
 
 
 if __name__ == "__main__":
     keyRing = KeyRing()
+    keyRing.generateRSAKeys(1024, "Aleksandar", "123")
     keyRing.print()
