@@ -4,24 +4,8 @@ from Cryptodome.Hash import SHA256
 from Cryptodome.PublicKey import DSA as CryptodomeDSA
 from Cryptodome.Signature import DSS
 
-from Aleksandar.FileManager import FileManager
-
 
 class DSA:
-    def __init__(self, key, plaintext):
-        self.key = key
-        self.plaintext = plaintext
-        self.signature = self.__sign()
-
-    def __sign(self):
-        return DSA.sign(self.plaintext, self.key)
-
-    def __decrypt(self):
-        return DSA.verify(self.plaintext, self.signature, self.key)
-
-    def getSignature(self):
-        return self.signature
-
     @staticmethod
     def sign(plaintext, key) -> base64:
         return DSS.new(key, 'fips-186-3').sign(SHA256.new(plaintext))
@@ -50,27 +34,41 @@ class DSA:
 
     @staticmethod
     def generateKeyPair(keySize):
-        key = CryptodomeDSA.generate(keySize)
-        PUPem = key.publickey().export_key()
-        PRPem = key.export_key()
-        return PUPem, PRPem
+        return CryptodomeDSA.generate(keySize)
+
+    @staticmethod
+    def exportPrivateKey(key) -> str:
+        return key.export_key().decode('utf-8')
+
+    @staticmethod
+    def exportPublicKey(key) -> str:
+        return key.export_key().decode('utf-8')
 
     @staticmethod
     def importKey(key):
         return CryptodomeDSA.import_key(key.encode('utf-8'))
 
     @staticmethod
-    def exportKey(key) -> str:
-        return key.export_key().decode('utf-8')
+    def getKeyId(key) -> int:
+        return key.y % 2 ** 32
 
 
 if __name__ == "__main__":
-    key = CryptodomeDSA.generate(1024)
-    dsa = DSA(key, b"Hello")
-    exported = DSA.signAndExport(b"Hello", key)
-    print(exported)
+    key = DSA.generateKeyPair(1024)
 
-    print(DSA.importAndVerify(b"Hello", exported, key))
+    print(DSA.exportPrivateKey(key))
+    print(DSA.exportPublicKey(key))
+
+    pr = DSA.importKey(DSA.exportPrivateKey(key))
+    pu = DSA.importKey(DSA.exportPublicKey(key))
+
+    print(DSA.getKeyId(key))
+
+    # test encrypt
+    plaintext = b"Hello"
+    signature = DSA.signAndExport(plaintext, pr)
+    print(signature)
+    print(DSA.importAndVerify(plaintext, signature, pu))
 
     # print(dsa.getSignature())
     # print(dsa.verify(b"Hello", dsa.signature, dsa.key))
