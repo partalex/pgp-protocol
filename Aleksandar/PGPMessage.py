@@ -20,18 +20,17 @@ class PGPMessage:
         return {
             "authentication":
                 ["RSA", "DSA", "NONE"],
-            "encryption":
-                ["3DES", "AES128", "NONE"],
             "signature":
+                ["3DES", "AES128", "NONE"],
+            "encryption":
                 ["RSA", "ElGamal", "NONE"]
-
         }
 
     @staticmethod
     def send(
             filename, data,
-            authentication_alg, signature_alg, encryption_alg,
-            authentication_key=None, signature_key=None, encryption_key=None,
+            authentication_alg="No", signature_alg="No", encryption_alg="No",
+            authentication_key="No", signature_key="No", encryption_key="No",
             savePath="./resources/ReceiveInfo"
     ):
 
@@ -54,11 +53,12 @@ class PGPMessage:
                 key_id = RSA.getKeyId(authentication_key)
             case "DSA":
                 authentication_key = DSA.importKey(authentication_key)
-                message_digest_signed = DSA.sign(message_digest.encode('utf-8'), authentication_key)
+                message_digest_signed = DSA.signAndExport(message_digest.encode('utf-8'), authentication_key)
                 key_id = DSA.getKeyId(authentication_key)
-            case "NONE":
-                message_digest_signed = b""
-                key_id = ""
+                # authentication_alg = "ElGamal"
+            case "No":
+                message_digest_signed = "No"
+                key_id = "No"
             case _:
                 raise Exception("Invalid algorithm.")
 
@@ -74,7 +74,6 @@ class PGPMessage:
         signature_message_bytes = DictBytes.dictToBytes(signature_message_dict)
 
         # 3. Compression                                            # Required
-        # print decompressed_signature_message_bytes
         compressed_signature_message_bytes = Compression.compress(signature_message_bytes)
 
         # 4. Signing                                          # Optional
@@ -85,12 +84,11 @@ class PGPMessage:
                     compressed_signature_message_bytes,
                     signature_key)
             case "AES128":
-                signature_key = AES128.encryptAndExport(compressed_signature_message_bytes, signature_key)
+                # signature_key = AES128.import_key(signature_key)
                 signed_compressed_signature_message = AES128.encryptAndExport(compressed_signature_message_bytes,
                                                                               signature_key)
-            case "NONE":
-                signed_compressed_signature_message = compressed_signature_message_bytes.decode('utf-8')
-                pass
+            case "No":
+                signed_compressed_signature_message = compressed_signature_message_bytes.hex()
             case _:
                 raise Exception("Invalid algorithm.")
 
@@ -106,10 +104,10 @@ class PGPMessage:
                 session_key = RSA.encryptAndExport(signature_key, encryption_key)
                 key_id = RSA.getKeyId(encryption_key)
             case "ElGamal":
-                encryption_key = ElGamal.importKey(encryption_key)
+                # encryption_key = ElGamal.importKey(encryption_key)
                 session_key = ElGamal.encryptAndExport(signature_key, encryption_key)
                 key_id = ElGamal.getKeyId(encryption_key)
-            case "NONE":
+            case "No":
                 key_id = ""
                 session_key = ""
             case _:
@@ -144,16 +142,16 @@ class PGPMessage:
         encryption_data = final_dict["Inner data"]
 
         key_id = final_dict["Key Id"]
-        verification_key = key_ring.getPrivateKeyByKeyId(key_id)
 
         match encryption_alg:
             case "RSA":
+                verification_key = key_ring.getPrivateKeyByKeyId(key_id)
                 verification_key = RSA.importPrivateKey(verification_key)
                 signature_key = RSA.importAndDecrypt(session_key, verification_key)
             case "ElGamal":
-                signature_key = ElGamal.importAndVerify(session_key, verification_key)
-                raise NotImplementedError
-            case "NONE":
+                verification_key = key_ring.getPrivateKeyByKeyId(key_id)
+                signature_key = ElGamal.importAndDecrypt(session_key, verification_key)
+            case "No":
                 signature_key = session_key.encode('utf-8')
                 pass
             case _:
@@ -168,11 +166,13 @@ class PGPMessage:
                 compressed_signature_message_bytes = TripleDES.importAndDecrypt(compressed_signed_message,
                                                                                 signature_key)
             case "AES128":
-                compressed_signature_message_bytes = compressed_signed_message
-                raise NotImplementedError
-            case "NONE":
-                compressed_signature_message_bytes = compressed_signed_message.encode('utf-8')
-                pass
+                # signature_key = AES128.import_key(signature_key)
+                compressed_signature_message_bytes = AES128.importAndDecrypt(compressed_signed_message,
+                                                                             signature_key)
+            case "No":
+                # compressed_signature_message_bytes = compressed_signed_message.encode('utf-8')
+                # to byte64
+                compressed_signature_message_bytes = bytes.fromhex(compressed_signed_message)
             case _:
                 raise Exception("Invalid algorithm.")
 
@@ -187,22 +187,29 @@ class PGPMessage:
         key_id = signature_message_dict["Key Id of sender Public key"]
         message_dict = signature_message_dict["Message"]
 
-        signature_key = key_ring.getPublicKeyByKeyId(key_id)
         message_bytes = DictBytes.dictToBytes(message_dict)
 
         match authentication_alg:
             case "RSA":
+                signature_key = key_ring.getPublicKeyByKeyId(key_id)
                 signature_key = RSA.importPublicKey(signature_key)
                 try:
                     message_digest = SHA1().hash(message_bytes)
-                    ret = test_message_digest = RSA.importAndVerify(
+                    RSA.importAndVerify(
                         message_digest.encode('utf-8'), message_digest_signed, signature_key)
                 except VerificationError as e:
                     print(e)
-            case "ElGamal":
-                raise NotImplementedError
-            case "NONE":
-                messageDigest = True
+            case "DSA":
+                signature_key = key_ring.getPublicKeyByKeyId(key_id)
+                signature_key = DSA.importKey(signature_key)
+                try:
+                    message_digest = SHA1().hash(message_bytes)
+                    DSA.importAndVerify(
+                        message_digest.encode('utf-8'), message_digest_signed, signature_key)
+                except VerificationError as e:
+                    print(e)
+            case "No":
+                pass
             case _:
                 raise Exception("Invalid algorithm.")
 
