@@ -47,10 +47,20 @@ class AES128:
         return plaintext
 
     @staticmethod
-    def importAndDecrypt(ciphertext, key, iv):
+    def importAndDecrypt(ciphertext, key):
+        iv = ciphertext['iv']
+        ciphertext = ciphertext['ciphertext']
         iv = iv.encode('utf-8')
         ciphertext = ciphertext.encode('utf-8')
         return AES128.decrypt(ciphertext, key, iv)
+
+    @staticmethod
+    def import_key(key :str)->bytes:
+        return b64decode(key)
+
+    @staticmethod
+    def export_key(key :bytes)->str:
+        return b64encode(key).decode('utf-8')
 
 
 if __name__ == "__main__":
@@ -58,16 +68,12 @@ if __name__ == "__main__":
     message = b'Hello World'
     print("Plaintext: \n\t" + message.decode())
 
-    data = AES128.encryptAndExport(message, key)
-
-    ciphertext = data['ciphertext']
-    iv = data['iv']
+    ciphertext = AES128.encryptAndExport(message, key)
 
     print("Encryption parameters:")
-    print("\tiv = " + iv)
-    print("\tct = " + ciphertext)
+    print("\tct = " + str(ciphertext))
 
-    print("Original message: \n\t" + AES128.importAndDecrypt(ciphertext, key, iv).decode('utf-8'))
+    print("Original message: \n\t" + AES128.importAndDecrypt(ciphertext, key).decode('utf-8'))
 
     # data = AES128.encrypt(message, key)
     # print("Encryption parameters:")
