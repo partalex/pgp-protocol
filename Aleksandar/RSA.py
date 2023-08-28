@@ -9,8 +9,8 @@ class RSA:
         return rsa.encrypt(plaintext, key)
 
     @staticmethod
-    def encryptAndExport(plaintext, key) -> str:
-        return rsa.encrypt(plaintext, key).decode('utf-8')
+    def encryptAndExport(plaintext, public_key) -> str:
+        return rsa.encrypt(plaintext, public_key).hex()
 
     @staticmethod
     def decrypt(ciphertext, key) -> bytes:
@@ -18,31 +18,35 @@ class RSA:
 
     @staticmethod
     def importAndDecrypt(ciphertext, key) -> bytes:
-        return rsa.decrypt(ciphertext.encode('utf-8'), key)
+        # convert from hex to bytes
+        ciphertext_bytes = bytes.fromhex(ciphertext)
+        return rsa.decrypt(ciphertext_bytes, key)
 
     @staticmethod
     def decryptToString(ciphertext, key) -> str:
         return rsa.decrypt(ciphertext, key).decode('utf-8')
 
     @staticmethod
-    def generateKeyPair(keySize):
-        return rsa.newkeys(keySize)
+    def generateKeyPair(key_size):
+        return rsa.newkeys(key_size)
 
     @staticmethod
-    def sign(message, privateKey):
-        return rsa.sign(message, privateKey, 'SHA-1')
+    def sign(message, private_key):
+        return rsa.sign(message, private_key, 'SHA-1')
 
     @staticmethod
-    def signAndExport(message, privateKey) -> str:
-        return rsa.sign(message, privateKey, 'SHA-1').hex()
+    def signAndExport(message, private_key) -> str:
+        return rsa.sign(message, private_key, 'SHA-1').hex()
 
     @staticmethod
-    def verify(message, signature, publicKey):
-        return rsa.verify(message, signature, publicKey) == 'SHA-1'
+    def verify(message, signature, public_key):
+        return rsa.verify(message, signature, public_key) == 'SHA-1'
 
     @staticmethod
-    def importAndVerify(message, signature, publicKey):
-        return rsa.verify(message, bytes.fromhex(signature), publicKey) == 'SHA-1'
+    def importAndVerify(message: bytes, signature: str, public_key):
+        if RSA.verify(message, bytes.fromhex(signature), public_key):
+            return True
+        raise Exception("Invalid signature.")
 
     @staticmethod
     def exportKey(key) -> str:
@@ -59,7 +63,7 @@ class RSA:
         return rsa.PrivateKey.load_pkcs1(key, format='PEM')
 
     @staticmethod
-    def getKeyId(key)->int:
+    def getKeyId(key) -> int:
         return key.n % 2 ** 32
 
 
@@ -70,6 +74,22 @@ if __name__ == '__main__':
     # encrypt with public key
     print("Encrypt and decrypt with RSA.")
     pu, pr = keys = RSA.generateKeyPair(512)
+    # fixme -----------------------
+
+    pu_export = RSA.exportKey(pu)
+    pr_export = RSA.exportKey(pr)
+
+    pu_import = RSA.importPublicKey(pu_export)
+    pr_import = RSA.importPrivateKey(pr_export)
+
+    # test encryption with public key
+    cipher = RSA.encryptAndExport(message, pu_import)
+    print(RSA.encryptAndExport(message, pu_import))
+    print(RSA.importAndDecrypt(cipher, pr_import))
+
+    exit(0)
+
+    # fixme -----------------------
     ciphertext = RSA.encrypt(message, pu)
     print(message)
     print(ciphertext)
@@ -79,12 +99,12 @@ if __name__ == '__main__':
     print()
     print("-" * 50)
     print("Sign and verify with RSA.")
-    signature = RSA.sign(message, pr)
+    signature = RSA.hash(message, pr)
     print(signature)
     # test type of signature
     print(signature.hex())
     print("Signature: ", signature)
-    print(RSA.verify(message, signature, pu))
+    print(RSA.importAndVerify(message, signature, pu))
     print("-" * 50)
 
     pu, pr = RSA.generateKeyPair(512)
