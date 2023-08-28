@@ -1,4 +1,5 @@
 from Aleksandar.DSA import DSA
+from Aleksandar.ElGamal import ElGamal
 from RSA import RSA
 from Timestamp import Timestamp
 
@@ -8,27 +9,41 @@ class KeyRing:
         self.ring = []
 
     def generateRSAKeys(self, keySize, userId, password):
-        PUPem, PRPem = RSA.generateKeyPair(keySize)
+        publicKey, privateKey = RSA.generateKeyPair(keySize)
         self.ring.append({
-            "Public key": PUPem,
-            "Private key": PRPem,
+            "Public key": RSA.exportKey(publicKey),
+            "Private key": RSA.exportKey(privateKey),
             "Timestamp": Timestamp.generateString(),
-            "Key Id": PUPem.n % 2 ** 32,
+            "Key Id": RSA.getKeyId(publicKey),
             "User Id": userId,
             "Password": password,
             "Type": "RSA"
         })
 
-    def generateDSAKeys(self, keySize, userId, password):
-        PUPem, PRPem = DSA.generateKeyPair(keySize)
+    def generateElGamalKeys(self, keySize, userId, password):
+        keys = ElGamal.generateKeyPair(keySize)
+        publicKey = keys["Public key"]
+        privateKey = keys["Private key"]
         self.ring.append({
-            "publicKey": PUPem.decode('utf-8'),
-            "privateKey": PRPem.decode('utf-8'),
-            "timestamp": Timestamp.generateString(),
-            "keyId": DSA.importKey(PUPem).y % 2 ** 32,
-            "userId": userId,
-            "password": password,
-            "type": "DSA"
+            "Public key": publicKey,
+            "Private key": privateKey,
+            "Timestamp": Timestamp.generateString(),
+            "Key Id": ElGamal.getKeyId(publicKey),
+            "User Id": userId,
+            "Password": password,
+            "Type": "ElGamal"
+        })
+
+    def generateDSAKeys(self, keySize, userId, password):
+        keys = DSA.generateKeyPair(keySize)
+        self.ring.append({
+            "Public key": DSA.exportPublicKey(keys),
+            "Private key": DSA.exportPrivateKey(keys),
+            "Timestamp": Timestamp.generateString(),
+            "Key Id": DSA.getKeyId(keys),
+            "User Id": userId,
+            "Password": password,
+            "Type": "ElGamal"
         })
 
     def getPrivateKeyByKeyId(self, keyId):
@@ -66,4 +81,5 @@ class KeyRing:
 if __name__ == "__main__":
     keyRing = KeyRing()
     keyRing.generateRSAKeys(1024, "Aleksandar", "123")
+    keyRing.generateElGamalKeys(1024, "Aleksandar", "123")
     keyRing.print()
