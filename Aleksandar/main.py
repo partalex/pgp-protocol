@@ -22,20 +22,21 @@ if __name__ == "__main__":
     # exit(0)
 
     # Load message info.
-    inputInfo = "./resources/SendInfo"
-    sendInfo = FileManager.jsonReadFromFile(inputInfo)
+    input_info_1 = "./resources/input_info_1"
+    input_info_2 = "./resources/input_info_2"
+    send_info = FileManager.jsonReadFromFile(input_info_1)
+    # send_info = FileManager.jsonReadFromFile(input_info_2)
 
     # Prepare parameters.
-    message = sendInfo['Message']
-    output = sendInfo['Output']
-    authentication_alg = sendInfo['Authentication algorithm']  # [RSA, DSA, NONE].
-    signature_alg = sendInfo['Signature algorithm']  # [RSA, ElGamal, DSA), NONE]
-    encryption_alg = sendInfo['Encryption algorithm']  # [3DES, AES128, NONE]
-    savePath = sendInfo['Save path']
+    message = send_info['Message']
+    output = send_info['Output']
+    authentication_alg = send_info['Authentication algorithm']  # [RSA, DSA, NONE].
+    signature_alg = send_info['Signature algorithm']  # [RSA, ElGamal, DSA), NONE]
+    encryption_alg = send_info['Encryption algorithm']  # [3DES, AES128, NONE]
+    savePath = send_info['Save path']
 
     authentication_key = keyRing.ring[0]['Private key']  # [{RSA}, DSA, NONE]
     authentication_key_id = keyRing.ring[0]['Key Id']  # [{RSA}, DSA, NONE]
-
     signature_key = get_random_bytes(24)  # [{3DES}, AES128, NONE]
     encryption_key = keyRing.ring[0]['Public key']  # [{RSA}, ElGamal, NONE]
 
