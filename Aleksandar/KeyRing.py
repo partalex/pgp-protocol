@@ -8,60 +8,60 @@ class KeyRing:
     def __init__(self):
         self.ring = []
 
-    def generateRSAKeys(self, keySize, userId, password):
-        publicKey, privateKey = RSA.generateKeyPair(keySize)
+    def generateRSAKeys(self, key_size, user_id, password):
+        publicKey, privateKey = RSA.generateKeyPair(key_size)
         self.ring.append({
             "Public key": RSA.exportKey(publicKey),
             "Private key": RSA.exportKey(privateKey),
             "Timestamp": Timestamp.generateString(),
             "Key Id": RSA.getKeyId(publicKey),
-            "User Id": userId,
+            "User Id": user_id,
             "Password": password,
             "Type": "RSA"
         })
 
-    def generateElGamalKeys(self, keySize, userId, password):
-        keys = ElGamal.generateKeyPair(keySize)
-        publicKey = keys["Public key"]
-        privateKey = keys["Private key"]
+    def generateElGamalKeys(self, key_size, user_id, password):
+        keys = ElGamal.generateKeyPair(key_size)
+        public_key = keys["Public key"]
+        private_key = keys["Private key"]
         self.ring.append({
-            "Public key": publicKey,
-            "Private key": privateKey,
+            "Public key": public_key,
+            "Private key": private_key,
             "Timestamp": Timestamp.generateString(),
-            "Key Id": ElGamal.getKeyId(publicKey),
-            "User Id": userId,
+            "Key Id": ElGamal.getKeyId(public_key),
+            "User Id": user_id,
             "Password": password,
             "Type": "ElGamal"
         })
 
-    def generateDSAKeys(self, keySize, userId, password):
-        keys = DSA.generateKeyPair(keySize)
+    def generateDSAKeys(self, key_size, user_id, password):
+        keys = DSA.generateKeyPair(key_size)
         self.ring.append({
             "Public key": DSA.exportPublicKey(keys),
             "Private key": DSA.exportPrivateKey(keys),
             "Timestamp": Timestamp.generateString(),
             "Key Id": DSA.getKeyId(keys),
-            "User Id": userId,
+            "User Id": user_id,
             "Password": password,
             "Type": "ElGamal"
         })
 
-    def getPrivateKeyByKeyId(self, keyId):
-        for keyRing in self.ring:
-            if keyRing["keyId"] == keyId:
-                return keyRing["privateKey"]
+    def getPrivateKeyByKeyId(self, key_id):
+        for key_ring in self.ring:
+            if key_ring["Key Id"] == key_id:
+                return key_ring["Private key"]
         raise Exception("Key not found.")
 
-    def getPublicKeyByKeyId(self, keyId):
-        for keyRing in self.ring:
-            if keyRing["keyId"] == keyId:
-                return keyRing["publicKey"]
+    def getPublicKeyByKeyId(self, key_id):
+        for key_ring in self.ring:
+            if key_ring["Key Id"] == key_id:
+                return key_ring["Public key"]
         raise Exception("Key not found.")
 
     def getPublicKeyByUserId(self, userId, password):
-        for keyRing in self.ring:
-            if keyRing["userId"] == userId and keyRing["password"] == password:
-                return keyRing["publicKey"]
+        for key_ring in self.ring:
+            if key_ring["User Id"] == userId and key_ring["Password"] == password:
+                return key_ring["publicKey"]
         raise Exception("Key not found.")
 
     def print(self):
