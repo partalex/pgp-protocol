@@ -54,9 +54,11 @@ class PGPMessage:
             case "RSA":
                 authentication_key = RSA.importPrivateKey(authentication_key)
                 messageDigestSigned = RSA.signAndExport(messageDigest.encode('utf-8'), authentication_key)
+                keyId = RSA.getKeyId(authentication_key)
             case "DSA":
                 authentication_key = DSA.importKey(authentication_key)
                 messageDigestSigned = DSA.sign(messageDigest.encode('utf-8'), authentication_key)
+                keyId = DSA.getKeyId(authentication_key)
             case "NONE":
                 messageDigestSigned = b""
             case _:
@@ -66,8 +68,8 @@ class PGPMessage:
             "Message": messageDict,
             "Message Digest": messageDigestSigned,
             "Authentication algorithm": authentication_alg,
-            # "keyIdOfSendersPublicKey": senderPrivateKey[-4:],
-            # "leadingTwoOctetsOfMessageDigest": messageDigest[:2],
+            "Key Id of sender's public key": keyId,
+            "Leading two octets of message digest": messageDigest[:2].hex(),
             "Timestamp": Timestamp().generateString()
         }
 
