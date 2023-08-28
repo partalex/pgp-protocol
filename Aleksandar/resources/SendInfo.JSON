@@ -1,9 +1,9 @@
 {
   "message": "Hello World!",
   "output": "ciphertext.txt",
-  "authentication": "RSA",
-  "encryption": "3DES",
-  "signature": "RSA",
+  "authentication_alg": "RSA",
+  "encryption_alg": "3DES",
+  "signature_alg": "RSA",
   "senderPrivateKey": "senderPrivateKey",
   "receiverPublicKey": "receiverPublicKey",
   "savePath": "resources/ReceiveInfo"
