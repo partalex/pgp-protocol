@@ -58,6 +58,10 @@ class RSA:
         key = key.encode('utf-8')
         return rsa.PrivateKey.load_pkcs1(key, format='PEM')
 
+    @staticmethod
+    def getKeyId(key)->int:
+        return key.n % 2 ** 32
+
 
 if __name__ == '__main__':
     message = b"Hello Tony, I am Jarvis!"
