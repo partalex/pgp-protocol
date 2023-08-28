@@ -18,10 +18,10 @@ if __name__ == "__main__":
             keyRing.generateDSAKeys(keyInfo["Key size"], keyInfo["User Id"], keyInfo["Password"])
         else:
             raise Exception("Invalid key type.")
-    # keyRing.print()
+    keyRing.print()
 
-    test = 1
-    
+    test = 0
+
     if test == 0:
         input_info = "./resources/input_info_0"
 
