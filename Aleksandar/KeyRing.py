@@ -43,7 +43,7 @@ class KeyRing:
             "Key Id": DSA.getKeyId(keys),
             "User Id": user_id,
             "Password": password,
-            "Type": "ElGamal"
+            "Type": "DSA"
         })
 
     def getPrivateKeyByKeyId(self, key_id):
