@@ -20,7 +20,7 @@ class ElGamal:
         g = dsaKeys.g
         x = random.randint(1, p - 1)  # Private key = x.
         y = pow(g, x, p)  # Public key = y.
-        return {"Public key": {"Public key": y, "p": p}, "Private key": {"Private key": x, "p": p}}
+        return {"Public key": {"Public key": y, "g": g, "p": p}, "Private key": {"Private key": x, "p": p}}
 
     @staticmethod
     def getKeyId(key: dict) -> int:
@@ -58,20 +58,19 @@ class ElGamal:
         return plaintext == ElGamal.__decrypt(c1, c2, privateKey, p)
 
     @staticmethod
-    def importAndVerify(plaintext, ciphertext, privateKey, key) -> bool:
+    def importAndVerify(plaintext, ciphertext, privateKey: dict) -> bool:
         c1 = ciphertext['c1']
         c2 = ciphertext['c2']
         plaintextInt = int.from_bytes(plaintext, 'big')
-        # convert p
-        return ElGamal.__verify(plaintextInt, c1, c2, privateKey, key)
+        return ElGamal.__verify(plaintextInt, c1, c2, privateKey['Private key'], privateKey['p'])
 
     @staticmethod
-    def exportKey(key) -> dict:
-        return {'p': key['p']}
-
-    @staticmethod
-    def importKey(key) -> int:
-        return key['p']
+    def importAndDecrypt(ciphertext, privateKey: dict) -> bytes:
+        c1 = ciphertext['c1']
+        c2 = ciphertext['c2']
+        int_message = ElGamal.__decrypt(c1, c2, privateKey['Private key'], privateKey['p'])
+        to_bytes = int_message.to_bytes((int_message.bit_length() + 7) // 8, 'big')
+        return to_bytes
 
     @staticmethod
     def getSignKey(key) -> dict:
@@ -87,24 +86,17 @@ if __name__ == '__main__':
     plaintext = (b"lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et"
                  b" dolore magna aliqua")
 
-    keys = ElGamal.generateKey(1024)
+    keys = ElGamal.generateKeyPair(1024)
 
-    senderKeys = {
-        "Public key": keys['Public key'],
-        "g": keys['g'],
-        "p": keys['p']
-    }
-
-    ciphertext = ElGamal.encryptAndExport(plaintext, senderKeys)
-
-    exportedKey = ElGamal.exportKey(keys)
-
-    importedKey = ElGamal.importKey(exportedKey)
+    ciphertext = ElGamal.encryptAndExport(plaintext, keys['Public key'])
 
     privateKey = keys['Private key']
 
-    original = ElGamal.importAndVerify(plaintext, ciphertext, privateKey, importedKey)
+    flag = ElGamal.importAndVerify(plaintext, ciphertext, privateKey)
+
+    originalTest = ElGamal.importAndDecrypt(ciphertext, privateKey)
 
     print("Originalna poruka:", plaintext)
     print("Kriptovana poruka", ciphertext)
-    print("Dekriptovana poruka:", original)
+    print("Radi: ", flag)
+    print("Dekriptovana poruka:", originalTest)
