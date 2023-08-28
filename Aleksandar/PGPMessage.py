@@ -1,6 +1,8 @@
+import base64
+
 from Cryptodome.Random import get_random_bytes
 
-from Aleksandar.Radix64 import Radix64
+from Radix64 import Radix64
 from Timestamp import Timestamp
 from SHA1 import SHA1
 from RSA import RSA
@@ -9,6 +11,7 @@ from Compression import Compression
 from TripleDES import TripleDES
 from AES128 import AES128
 from DSA import DSA
+from DictBytes import DictBytes
 
 
 class PGPMessage:
@@ -26,98 +29,133 @@ class PGPMessage:
         }
 
     @staticmethod
-    def send(filename, message, authentication, encryption, signature, senderPrivateKey=None,
-             receiverPublicKey=None, savePath="./resources/ReceiveInfo"):
+    def send(
+            filename, data,
+            authentication_alg, encryption_alg, signature_alg,
+            authentication_key=None, encryption_key=None, signature_key=None,
+            savePath="./resources/ReceiveInfo"
+    ):
+
         # 0. Prepare message.                              # Required
         # Add timestamp to the message.
         # Add file name to the message.
 
-        timestamp = Timestamp().generateInBytes()
-        message = timestamp + message
-        message = filename.encode('utf-8') + message
+        messageDict = {
+            "Timestamp": Timestamp().generateString(),
+            "Filename": filename,
+            "Data": data
+        }
 
         # 1.Authentication = Signing                        # Optional
-        # Hash algorithm [SHA-1, NONE]. Ne
-        # Result of the hash function is 160 bit value.
-        # Protect hash value with PrivateKeySender [RSA, ElGamal, NONE]
-        # Save last 4 bytes (64 bit) of PublicKey that is pair of PrivateKeySender.
-        # Last 4 bytes of PublicKey is called KeyID and is calculated with mod 264.
-        # Public key of the receiver [RSA, ElGamal, NONE].
-        # Get it from the keyring with the receiver's ID or take first one.
-        # Concatenate encrypted Hash and Message
 
-        hashedDigest = SHA1().sign(message)
-        match authentication:
+        messageBytes = DictBytes.dictToBytes(messageDict)
+        messageDigest = SHA1().sign(messageBytes)
+        match authentication_alg:
             case "RSA":
-                encryptedHash = RSA(senderPrivateKey, hashedDigest).getCiphertext()
+                authentication_key = RSA.importPrivateKey(authentication_key)
+                messageDigestSigned = RSA.signAndExport(messageDigest.encode('utf-8'), authentication_key)
             case "DSA":
-                encryptedHash = DSA(senderPrivateKey, hashedDigest).getSignature()
+                authentication_key = DSA.importKey(authentication_key)
+                messageDigestSigned = DSA.sign(messageDigest.encode('utf-8'), authentication_key)
             case "NONE":
-                encryptedHash = b""
+                messageDigestSigned = b""
             case _:
                 raise Exception("Invalid algorithm.")
 
-        message = encryptedHash + message
+        signatureDict = {
+            "Message": messageDict,
+            "Message Digest": messageDigestSigned,
+            "Authentication algorithm": authentication_alg,
+            # "keyIdOfSendersPublicKey": senderPrivateKey[-4:],
+            # "leadingTwoOctetsOfMessageDigest": messageDigest[:2],
+            "Timestamp": Timestamp().generateString()
+        }
 
-        # 2.Compression [Compression, NONE]                 # Required
-        # Compress Message
-        message = Compression.compress(message)
+        # 2.Compression                                     # Required
+        signatureBytes = DictBytes.dictToBytes(signatureDict)
+
+        signatureCompressed = Compression.compress(signatureBytes)
 
         # 3. Encryption                                     # Optional
-        # Symmetric encryption, block cipher, CBC mode
-        # SymmetricKey random 128 bit value. One time use.
-        # CAST-129 to generate SymmetricKey.
-        # SymmetricKey is encrypted with Public Key of the receiver [RSA, ElGamal, NONE].
-        # SymmetricKey = None  # Symmetric key [AES, DES, 3DES, NONE]
-        # Concatenate encrypted SymmetricKey and Message.
 
-        symmetricKey = "Symmetric or Session key has not chosen yet."
-
-        match encryption:
+        match encryption_alg:
             case "3DES":
-                symmetricKey = get_random_bytes(24)
-                message = TripleDES(symmetricKey, message).getCiphertext()
-                # raise NotImplementedError
+                encryption_key = TripleDES.importKey(encryption_key)
+                signatureMessageCompressedEncrypted = TripleDES.encryptAndExport(encryption_key, signatureCompressed)
             case "AES128":
-                symmetricKey = get_random_bytes(16)
-                message = AES128(symmetricKey, message).getCiphertext()
-                # raise NotImplementedError
+                encryption_key = AES128.encryptAndExport(signatureCompressed, encryption_key)
             case "NONE":
+                signatureMessageCompressedEncrypted = signatureCompressed
                 pass
             case _:
                 raise Exception("Invalid algorithm.")
 
-        match signature:
+        match signature_alg:
             case "RSA":
-                encryptedSymmetricKey = RSA(receiverPublicKey, symmetricKey).getCiphertext()
+                encryptedSessionKey = RSA.encrypt(encryption_key, signature_key)
+                keyId = signature_key.n % 2 ** 32
             case "ElGamal":
-                encryptedSymmetricKey = ElGamal(receiverPublicKey, symmetricKey).getCiphertext()
+                encryptedSessionKey = ElGamal.encrypt(signature_key, encryption_key.y, encryption_key.g,
+                                                      encryption_key.p)
+                keyId = encryption_key.y % 2 ** 32
             case "NONE":
-                encryptedSymmetricKey = b""
+                keyId = ""
+                encryptedSessionKey = b""
             case _:
                 raise Exception("Invalid algorithm.")
 
-        message = encryptedSymmetricKey + message
+        sessionComponentDict = {
+            "Message": signatureMessageCompressedEncrypted.hex(),
+            "Session key": encryptedSessionKey.hex(),
+            "Encryption algorithm": encryption_alg,
+            "Signature algorithm": signature_alg,
+            "Key Id": keyId
+        }
+
+        sessionComponentBytes = DictBytes.dictToBytes(sessionComponentDict)
 
         # 4. Convert to radix64                             # Required
-        message = Radix64.encodeBytes(message)
+        R64Bytes = Radix64.encodeBytes(sessionComponentBytes)
+
+        return R64Bytes
 
     @staticmethod
-    def receive(savePath="./resources/ReceiveInfo"):
+    def receive(ciphertext, keyRing, savePath="./resources/ReceiveInfo"):
         # Load message info.
-        message = "Load message from file."
+        # ciphertext = "Load message from file." # TODO
 
         # 4. Convert from radix64                       # Required
-        message = Radix64.decodeToBytes(message)
+        sessionComponentBytes = Radix64.decodeToBytes(ciphertext)
+        sessionComponentDict = DictBytes.bytesToDict(sessionComponentBytes)
 
         # 3. Decryption                                 # Optional
         # Decrypt SymmetricKey with PrivateKeyReceiver [RSA, ElGamal, NONE]
         # Decrypt Message with decrypted SymmetricKey [AES, DES, 3DES, NONE]
 
-        match signature:
+        signature_alg = sessionComponentDict["Signature algorithm"]
+        keyId = sessionComponentDict["Key id"]
+        signature_key = keyRing.getPrivateKeyByKeyId(keyId)
+        encryptedSessionKey = sessionComponentDict["Session key"]
+
+        match signature_alg:
             case "RSA":
+                sessionKey = RSA.importPrivateKey(encryptedSessionKey)
+                encryption_key = RSA.decrypt(sessionKey, signature_key)
                 raise NotImplementedError
             case "ElGamal":
+                encryption_key = ElGamal.decrypt(sessionComponentDict["Session key"], signature_key)
+                raise NotImplementedError
+            case "NONE":
+                pass
+            case _:
+                raise Exception("Invalid algorithm.")
+
+        encryption_alg = sessionComponentDict["Encryption algorithm"]
+
+        match encryption_alg:
+            case "3DES":
+                raise NotImplementedError
+            case "AES128":
                 raise NotImplementedError
             case "NONE":
                 pass
@@ -125,25 +163,29 @@ class PGPMessage:
                 raise Exception("Invalid algorithm.")
 
         # 2. Decompress Message [Compression, NONE]     # Required
-        message = Compression.decompress(message)
+        signatureCompressed = Compression.decompress(sessionComponentBytes)
 
         # 1. Authentication                             # Optional
-        # Decrypt Hash with PublicKeySender [RSA, ElGamal, NONE]
-        # Hash Message and compare with decrypted Hash
-        # If they are not equal, message is corrupted.
-        # If they are equal, message is not corrupted.
+        signatureDict = DictBytes.bytesToDict(signatureCompressed)
+
+        authentication_alg = signatureDict["Authentication algorithm"]
+        messageDigestSigned = signatureDict["Message Digest"]
+        messageDict = signatureDict["Message"]
 
         match authentication:
             case "RSA":
-                raise NotImplementedError
+                messageDigest = RSA.verify(messageDict, messageDigestSigned, signature_key)
             case "ElGamal":
                 raise NotImplementedError
             case "NONE":
-                pass
+                messageDigest = True
             case _:
                 raise Exception("Invalid algorithm.")
 
-        return message
+        messageBytes = DictBytes.dictToBytes(messageDict)
+        # verify message digest
+
+        return messageDigest
 
 
 if __name__ == '__main__':
