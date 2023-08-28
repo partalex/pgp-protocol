@@ -11,12 +11,16 @@ class DictBytes:
         return output_byte
 
     @staticmethod
-    def bytesToDict(inputDict):
+    def bytesToDict(inputDict) -> dict:
         msg_bytes = base64.b64decode(inputDict)
         ascii_msg = msg_bytes.decode('utf-8')
         ascii_msg = ascii_msg.replace("'", "\"")
         output_dict = json.loads(ascii_msg)
         return output_dict
+
+    @staticmethod
+    def dictToString(inputDict) -> str:
+        DictBytes.dictToBytes(inputDict).decode('utf-8')
 
 
 if __name__ == '__main__':
