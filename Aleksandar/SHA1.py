@@ -7,7 +7,7 @@ class SHA1:
         return hashlib.sha1(message.encode('utf-8')).hexdigest()
 
     @staticmethod
-    def sign(message):
+    def hash(message):
         return hashlib.sha1(message).hexdigest()
 
     @staticmethod
@@ -22,6 +22,7 @@ class SHA1:
 
 
 if __name__ == '__main__':
+
     message = "Hello Tony, I am Jarvis!"
 
     print("Message: " + message)
@@ -32,6 +33,6 @@ if __name__ == '__main__':
     print("--------------------------------------------------")
 
     messageBytes = message.encode('utf-8')
-    signatureBytes = SHA1.sign(messageBytes)
+    signatureBytes = SHA1.hash(messageBytes)
     print("Signature: " + signatureBytes)
     print("Verify: " + str(SHA1.verify(messageBytes, signatureBytes)))

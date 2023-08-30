@@ -1,29 +1,65 @@
+from pyDes import *
 from Cryptodome.Random import get_random_bytes
-from pyDes import CBC, PAD_PKCS5, triple_des
 
 
 class TripleDES:
-    @staticmethod
-    def encrypt(plaintext, key=get_random_bytes(24), iv='\0\0\0\0\0\0\0\0'):
-        temp = triple_des(key, CBC, iv, pad=None, padmode=PAD_PKCS5)
-        cipher = temp.encrypt(plaintext)
-        return cipher
+    def __init__(self, key, plaintext, IV="00000000"):
+        self.key = key
+        self.plaintext = plaintext
+        self.ciphertext = TripleDES.encrypt(plaintext, key, IV)
 
     @staticmethod
-    def decrypt(ciphertext, key, iv='\0\0\0\0\0\0\0\0'):
-        temp = triple_des(key, CBC, iv, pad=None, padmode=PAD_PKCS5)
-        plaintext = temp.decrypt(ciphertext)
-        return plaintext
+    def encrypt(plaintext, key, IV="00000000"):
+        return triple_des(key, CBC, IV, pad=None, padmode=PAD_PKCS5).encrypt(plaintext)
+
+    @staticmethod
+    def encryptAndExport(plaintext, key, IV="00000000") -> str:
+        return triple_des(key, CBC, IV, pad=None, padmode=PAD_PKCS5).encrypt(plaintext).hex()
+
+    @staticmethod
+    def importAndDecrypt(plaintext, key, IV="00000000"):
+        return triple_des(key, CBC, IV, pad=None, padmode=PAD_PKCS5).decrypt(bytes.fromhex(plaintext))
+
+    @staticmethod
+    def generateKey(key, IV="00000000"):
+        return triple_des(key, CBC, IV, pad=None, padmode=PAD_PKCS5)
+
+    @staticmethod
+    def decrypt(ciphertext, key, IV="00000000"):
+        return triple_des(key, CBC, IV, pad=None, padmode=PAD_PKCS5).decrypt(ciphertext)
+
+    def getCiphertext(self):
+        return self.ciphertext
+
+    def verify(self):
+        return self.plaintext == TripleDES.decrypt(self.temp, self.ciphertext).decode('utf-8')
+
+    @staticmethod
+    def importKey(key) -> bytes:
+        return key
+
+    @staticmethod
+    def exportKey(key) -> bytes:
+        return key
 
 
 if __name__ == '__main__':
-    plaintext = b"Please encrypt my data with 24B key. If you want to use 16B key, use 3DES.py."
-    print("Plaintext: %r" % plaintext)
+    key = "1234567_1234567_1234567_"  # can be 16B or 24B
+    plaintext = b"Please encrypt my data with 24B key."
 
-    key = get_random_bytes(24)
-    iv = '\0\0\0\0\0\0\0\0'
-    cipher = TripleDES.encrypt(plaintext, key, iv)
-    print("Encrypted: %r" % cipher)
+    ciphertext = TripleDES.encryptAndExport(plaintext, key)
+    print("Ciphertext:", ciphertext)
 
-    originalText = TripleDES.decrypt(cipher, key, iv)
-    print("Decrypted: %r" % originalText)
+    originalText = TripleDES.importAndDecrypt(ciphertext, key)
+    print("Original message:", originalText)
+
+    # iv = "12345678"
+    #
+    # temp = triple_des(key, CBC, iv, pad=None, padmode=PAD_PKCS5)
+    # cipher = temp.encrypt(plaintext)
+    #
+    # originalText24B = temp.decrypt(cipher)
+    # print("Plaintext:", plaintext)
+    # print("Cipher:", cipher)
+    # print("Original message:", originalText24B.decode())
+    # print("Verify: " + str(originalText24B.decode() == plaintext))

@@ -1,0 +1,20 @@
+[
+  {
+    "Key size": 512,
+    "User Id": "avasilic99@gmail.com",
+    "Password": "RSA",
+    "Type": "RSA"
+  },
+  {
+    "Key size": 1024,
+    "User Id": "avasilic99@gmail.com",
+    "Password": "ElGamal",
+    "Type": "ElGamal"
+  },
+  {
+    "Key size": 1024,
+    "User Id": "avasilic99@gmail.com",
+    "Password": "DSA",
+    "Type": "DSA"
+  }
+]

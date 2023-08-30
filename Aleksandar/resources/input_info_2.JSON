@@ -1,0 +1,8 @@
+{
+  "Message": "Hello World!",
+  "Output": "ciphertext.txt",
+  "Authentication algorithm": "DSA",
+  "Signature algorithm": "AES128",
+  "Encryption algorithm": "ElGamal",
+  "Save path": "resources/ReceiveInfo"
+}

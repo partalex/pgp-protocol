@@ -20,7 +20,7 @@ class Compression:
 
 
 if __name__ == '__main__':
-    dataString = "Ovaj string je    kompresovan    zlib-om !!!!"
+    dataString = "Ovaj string je kompresovan zlib-om !"
     print(dataString)
 
     dataCompressed = Compression.compressString(dataString)
@@ -31,7 +31,7 @@ if __name__ == '__main__':
 
     print("--------------------------------------------------")
 
-    dataBytes = b"Ovaj string je    kompresovan    zlib-om !!!!"
+    dataBytes = b"Ovaj string je kompresovan zlib-om !"
     print(dataBytes)
 
     dataCompressed = Compression.compress(dataBytes)

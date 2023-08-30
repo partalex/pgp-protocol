@@ -2,3 +2,8 @@
 */__pycache__/*
 Aleksandar/*.JSON
 Aleksandar/*.txt
+Aleksandar/resources/*.pem
+RSA/privateKey.pem
+RSA/signature.txt
+
+/Old/
